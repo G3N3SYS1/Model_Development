@@ -1,0 +1,4 @@
+albumentations==1.4.6
+click==8.1.7
+fiftyone==0.23.8
+ultralytics==8.2.10

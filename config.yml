@@ -1,0 +1,17 @@
+dataset:
+  data_path: "./datasets/test-dataset/images"
+  labels_path: "./datasets/test-dataset/result.json"
+  name: "sta-toyota-prius-5dr-hatchback-auto-d2-test-2"
+  classes: ["TOYOTA"]
+  label_field: "segmentations"
+  export_dir: "./output"
+
+model:
+  path:
+  source:
+  params:
+    imgsz: 640
+    epochs: 100
+    batch: 32
+    conf: 0.3
+
