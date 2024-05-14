@@ -41,6 +41,4 @@ def load_config(path):
     global conf
     conf = OmegaConf.structured(OmegaConf.load(path))
 
-    print(conf)
-
     return conf

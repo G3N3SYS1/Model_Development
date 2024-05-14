@@ -9,8 +9,7 @@ def train(model_path, source, imgsz, epochs, batch):
 
 def predict(model_path, source, conf):
     model = YOLO(model_path)
-
-    return model.predict(data=source, save=True, save_txt=True, conf=conf)
+    return model.predict(source=source, save=True, save_txt=True, conf=conf)
 
 
 def val(model_path, source):

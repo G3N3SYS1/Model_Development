@@ -7,8 +7,8 @@ dataset:
   export_dir: "./output"
 
 model:
-  path:
-  source:
+  path: "./models/best/weights/best.pt"
+  source: "./dataset"
   params:
     imgsz: 640
     epochs: 100

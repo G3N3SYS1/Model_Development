@@ -2,7 +2,8 @@ import logging
 
 import click
 import data
-import model
+import extract
+import yolo
 from utils.config import Config, load_config
 
 
@@ -55,7 +56,7 @@ def export(conf: Config):
 @cli.command()
 @click.pass_obj
 def train(conf: Config):
-    model.train(
+    yolo.train(
         conf.model.path,
         conf.source,
         conf.model.params.imgsz,
@@ -73,9 +74,13 @@ def split(images, labels, output):
 
 
 @cli.command()
-def predict(conf: Config):
-    results = model.predict(conf.model.path, conf.source, conf.model.params.conf)
-    print(results)
+@click.argument("source")
+@click.option("-o", "--output", type=click.Path(exists=False))
+@click.pass_obj
+def predict(conf: Config, source, output):
+    results = yolo.predict(conf.model.path, source, conf.model.params.conf)
+    for r in results:
+        extract.segmentation_as_image(r, output)
 
 
 @cli.command()
