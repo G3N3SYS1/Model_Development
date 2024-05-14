@@ -2,9 +2,10 @@
 
 ## Pre-requisites
 Do ensure the following dependencies have been installed:
-- PyTorch
+- PyTorch (with GPU support)
 - cudnn and cuda-toolkit
 - conda
+- Visual Studio 2019 Build Tools (if on Windows)
 
 The follwing packages cudnn and cuda-toolkit may be easily installed using conda:
 ```
