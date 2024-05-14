@@ -1,7 +1,26 @@
+import logging
+
 import click
 import data
 import model
 from utils.config import Config, load_config
+
+
+def init():
+    """Configure the root logger of the application. The logging configuration will
+    be inherited by the loggers in all modules of the application.
+    """
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
+    ch.setFormatter(formatter)
+
+    logger.addHandler(ch)
 
 
 @click.group
@@ -66,4 +85,5 @@ def delete(name):
 
 
 if __name__ == "__main__":
+    init()
     cli()
