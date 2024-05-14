@@ -1,3 +1,4 @@
+import logging
 import os
 
 import fiftyone as fo
@@ -5,6 +6,8 @@ import supervision as sv
 from fiftyone.types import COCODetectionDataset
 
 DEFAULT_DATASET_TYPE = COCODetectionDataset
+
+log = logging.getLogger(__name__)
 
 
 def load(
@@ -15,6 +18,7 @@ def load(
 ):
 
     existing_datasets = fo.list_datasets()
+    log.debug(f"Existing datasets: {existing_datasets}")
 
     if name not in existing_datasets:
         print(f"Creating a new dataset, {name}...")
@@ -39,6 +43,24 @@ def export(
     label_field,
     dataset_type=DEFAULT_DATASET_TYPE,
 ):
+    """Export dataset from Fiftyone in the form of a COCO dataset unless
+    specified otherwise, which preserves both bbox coordinates and
+    segmentation masks of objects. The dataset should then be converted to
+    YOLO format using data.split() before feeding to YOLOv8 for training.
+
+    :param dataset: An instance of a Fiftyone Dataset
+    :type dataset: fiftyone.Dataset
+    :param export_dir: Path to export directory to store the exported dataset
+    :type export_dir: str
+    :param classes: An array of strings consisting of unique classes
+    :type classes: list[str]
+    :param label_field: Label in the dataset to export. Labels can be viewed
+    using dataset.view(), e.g. segmentations or detections
+    :type label_field: str
+    :param dataset_type: The format of the exported dataset. Default value
+    is COCODetectionDataset
+    :type dataset_type: fo.types
+    """
     dataset.untag_samples(dataset.distinct("tags"))
 
     dataset.export(
