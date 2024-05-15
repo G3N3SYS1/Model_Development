@@ -25,11 +25,16 @@ conda activate svlm
 
 pip install -r requirements.txt
 
+# Install the Albumentations plugin for Fiftyone
+fiftyone plugins download https://github.com/jacobmarks/fiftyone-albumentations-plugin
+
 # Run the program
 python svlm\main.py
 ```
 
 Additional scripts are available in the `scripts/` directory which may be used for data cleaning.
+
+If you're using Albumentations on Windows, you may need to manually create the tmp/ directory in C drive.
 
 ## Sample Datasets
 

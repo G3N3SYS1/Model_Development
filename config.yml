@@ -9,8 +9,10 @@ dataset:
 
 # Model prediction and training
 model:
+  # Pre-trained weights (e.g ./model/weights/best.pt)
   path: "./models/best/weights/best.pt"
-  source: "./dataset"
+  # For training (e.g. ./dataset/dataset.yaml)
+  source: "./dataset/dataset.yaml"
   params:
     imgsz: 640
     epochs: 100

@@ -22,15 +22,15 @@ class Params:
 
 
 class Model:
-    def __init__(self, path, params) -> None:
+    def __init__(self, path, source, params) -> None:
         self.path = path
+        self.source = source
         self.params: Params = params
 
 
 class Config:
-    def __init__(self, dataset, source, model) -> None:
+    def __init__(self, dataset, model) -> None:
         self.dataset: Dataset = dataset
-        self.source = source
         self.model: Model = model
 
 

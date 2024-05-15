@@ -4,3 +4,4 @@ fiftyone==0.23.8
 ultralytics==8.2.10
 omegaconf==2.3.0
 supervision==0.20.0
+pycocotools==2.0.7

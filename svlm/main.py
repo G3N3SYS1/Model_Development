@@ -42,6 +42,7 @@ def augment(conf: Config):
 
 
 @cli.command()
+@click.pass_obj
 def export(conf: Config):
     dataset = data.load(
         conf.dataset.name, conf.dataset.data_path, conf.dataset.labels_path
@@ -58,7 +59,7 @@ def export(conf: Config):
 def train(conf: Config):
     yolo.train(
         conf.model.path,
-        conf.source,
+        conf.model.source,
         conf.model.params.imgsz,
         conf.model.params.epochs,
         conf.model.params.batch,
