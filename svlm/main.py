@@ -48,9 +48,7 @@ def export(conf: Config):
         conf.dataset.name, conf.dataset.data_path, conf.dataset.labels_path
     )
     print("Exporting dataset to COCO format")
-    data.export(
-        dataset, conf.dataset.export_dir, conf.dataset.classes, conf.dataset.label_field
-    )
+    data.export(dataset, conf.dataset.export_dir, conf.dataset.label_field)
     print(f"Dataset has been exported to {conf.dataset.export_dir}.")
 
 

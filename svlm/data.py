@@ -39,7 +39,6 @@ def load(
 def export(
     dataset,
     export_dir: str,
-    classes: list[str],
     label_field,
     dataset_type=DEFAULT_DATASET_TYPE,
 ):
@@ -67,7 +66,7 @@ def export(
         export_dir,
         dataset_type=dataset_type,
         label_field=label_field,
-        classes=classes,
+        classes=dataset.default_classes,
     )
     log.info(
         f"Data has been successfully exported as f{DEFAULT_DATASET_TYPE.__name__} to {export_dir}."

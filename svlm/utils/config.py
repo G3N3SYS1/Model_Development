@@ -2,13 +2,10 @@ from omegaconf import OmegaConf
 
 
 class Dataset:
-    def __init__(
-        self, data_path, labels_path, name, classes, label_field, export_dir
-    ) -> None:
+    def __init__(self, data_path, labels_path, name, label_field, export_dir) -> None:
         self.data_path = data_path
         self.labels_path = labels_path
         self.name = name
-        self.classes: list[str] = classes
         self.label_field = label_field
         self.export_dir = export_dir
 
