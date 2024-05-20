@@ -37,7 +37,10 @@ def segmentation_as_image(res: Results, output_dir):
             contour = np.asarray(c.masks.xy.pop()).astype(np.int32).reshape(-1, 1, 2)
             _ = cv2.drawContours(b_mask, [contour], -1, (255, 255, 255), cv2.FILLED)
 
-            isolated = np.dstack([img, b_mask])
+            mask3ch = cv2.cvtColor(b_mask, cv2.COLOR_GRAY2BGR)
+            isolated = cv2.bitwise_and(mask3ch, img)
+
+            # isolated = np.dstack([img, b_mask]) # Transparent background by adding alpha channel
 
             x1, y1, x2, y2 = c.boxes.xyxy.cpu().numpy().squeeze().astype(np.int32)
             iso_crop = isolated[y1:y2, x1:x2]
