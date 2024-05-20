@@ -21,7 +21,7 @@ def load(
     log.debug(f"Existing datasets: {existing_datasets}")
 
     if name not in existing_datasets:
-        print(f"Creating a new dataset, {name}...")
+        log.info(f"Creating a new dataset, {name}...")
         dataset = fo.Dataset.from_dir(
             dataset_type=dataset_type,
             data_path=data_path,
@@ -29,7 +29,7 @@ def load(
             name=name,
         )
     else:
-        print("Loading dataset...")
+        log.info("Loading dataset...")
         dataset = fo.load_dataset(name)
 
     print(dataset.view())
@@ -69,7 +69,9 @@ def export(
         label_field=label_field,
         classes=classes,
     )
-    print(f"Data has been successfully exported to {export_dir}.")
+    log.info(
+        f"Data has been successfully exported as f{DEFAULT_DATASET_TYPE.__name__} to {export_dir}."
+    )
 
 
 def augment(dataset):
@@ -120,9 +122,9 @@ def split(images_directory_path, annotations_path, output_dir):
         images_directory_path=os.path.join(output_dir, "val/images"),
         annotations_directory_path=os.path.join(output_dir, "val/labels"),
     )
-    print(f"Dataset converted from COCO to YOLO format at {output_dir}")
+    log.info(f"Dataset converted from COCO to YOLO format at {output_dir}")
 
 
 def delete(dataset_name):
     fo.delete_dataset(dataset_name)
-    print(f"Dataset named {dataset_name} successfully deleted.")
+    log.info(f"Dataset named {dataset_name} successfully deleted.")
