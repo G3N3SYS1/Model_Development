@@ -1,10 +1,10 @@
 from ultralytics import YOLO
 
 
-def train(model_path, source, imgsz, epochs, batch):
+def train(model_path, dataset, imgsz, epochs, batch):
     # yolo segment train model=yolov8n-seg.pt data=test_data/dataset.yaml epochs=60 imgsz=640 batch=16
     model = YOLO(model_path)
-    return model.train(data=source, imgsz=imgsz, epochs=epochs, batch=batch, device=0)
+    return model.train(data=dataset, imgsz=imgsz, epochs=epochs, batch=batch, device=0)
 
 
 def predict(model_path, source, conf):

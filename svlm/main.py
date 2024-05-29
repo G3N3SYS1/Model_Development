@@ -36,7 +36,9 @@ def cli(ctx, config):
 @click.pass_obj
 def augment(conf: Config):
     dataset = data.load(
-        conf.dataset.name, conf.dataset.data_path, conf.dataset.labels_path
+        conf.fiftyone.dataset_name,
+        conf.fiftyone.augment.data_path,
+        conf.fiftyone.augment.labels_path,
     )
     data.augment(dataset)
 
@@ -45,22 +47,26 @@ def augment(conf: Config):
 @click.pass_obj
 def export(conf: Config):
     dataset = data.load(
-        conf.dataset.name, conf.dataset.data_path, conf.dataset.labels_path
+        conf.fiftyone.dataset_name,
+        conf.fiftyone.augment.data_path,
+        conf.fiftyone.augment.labels_path,
     )
     print("Exporting dataset to COCO format")
-    data.export(dataset, conf.dataset.export_dir, conf.dataset.label_field)
-    print(f"Dataset has been exported to {conf.dataset.export_dir}.")
+    data.export(
+        dataset, conf.fiftyone.export.output_dir, conf.fiftyone.export.label_field
+    )
+    print(f"Dataset has been exported to {conf.fiftyone.export.output_dir}.")
 
 
 @cli.command()
 @click.pass_obj
 def train(conf: Config):
     yolo.train(
-        conf.model.path,
-        conf.model.source,
-        conf.model.params.imgsz,
-        conf.model.params.epochs,
-        conf.model.params.batch,
+        conf.train.base_model_path,
+        conf.train.dataset,
+        conf.train.params.imgsz,
+        conf.train.params.epochs,
+        conf.train.params.batch,
     )
 
 
@@ -77,7 +83,11 @@ def split(images, labels, output):
 @click.option("-o", "--output", type=click.Path(exists=False))
 @click.pass_obj
 def predict(conf: Config, source, output):
-    results = yolo.predict(conf.model.path, source, conf.model.params.conf)
+    results = yolo.predict(
+        conf.predict.vehicle_model_path,
+        source if source is not None else conf.predict.source,
+        conf.predict.params.conf,
+    )
     for r in results:
         extract.segmentation_as_image(r, output)
 
