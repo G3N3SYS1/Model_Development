@@ -56,3 +56,4 @@ def segmentation_as_image(res: Results, output_dir):
             # When cv2.imshow, background still apparent. Only when saved as png will be transparent
             _ = cv2.imwrite(output_dir, iso_crop)
             log.info(f"Image successfully cropped and exported to {output_dir}")
+            return iso_crop

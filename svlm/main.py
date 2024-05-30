@@ -2,7 +2,6 @@ import logging
 
 import click
 import data
-import extract
 import yolo
 from utils.config import Config, load_config
 
@@ -79,17 +78,17 @@ def split(images, labels, output):
 
 
 @cli.command()
-@click.argument("source")
-@click.option("-o", "--output", type=click.Path(exists=False))
+# @click.argument("source")
+# @click.option("-o", "--output", "output_dir", type=click.Path(exists=False))
 @click.pass_obj
-def predict(conf: Config, source, output):
-    results = yolo.predict(
+def predict(conf: Config):
+    yolo.predict(
         conf.predict.vehicle_model_path,
-        source if source is not None else conf.predict.source,
+        conf.predict.lamp_model_path,
+        conf.predict.output_dir,
+        conf.predict.source,
         conf.predict.params.conf,
     )
-    for r in results:
-        extract.segmentation_as_image(r, output)
 
 
 @cli.command()
