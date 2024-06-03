@@ -67,6 +67,11 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source, conf, strea
 
                 img = lr.orig_img.copy()
                 for c in lr:
+                    if c.boxes is None or c.masks is None:
+                        log.info(
+                            "No bbox or segmentation masks found in prediction results."
+                        )
+                        continue
                     label = c.names[c.boxes.cls.tolist().pop()]
 
                     contour = (
@@ -83,13 +88,13 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source, conf, strea
                     label = label.split("_", 1)[0]
 
                     # Calculate mean pixel value of cropped image of lamp
-                    lamps[label] = image.isbright(img, label)
+                    lamps[label] = image.isbright(img, contour, label)
 
                     log.info(f"{label} is lit up: {lamps[label]}")
 
                 # Pad cropped image to original resolution. To write to video output,
                 # frame must have same resolution as the video
-                h, w = r.orig_img.shape
+                h, w, _ = r.orig_img.shape
                 img = image.pad(lr.plot().copy(), (w, h))
 
                 out.write(img)

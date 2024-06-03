@@ -7,8 +7,9 @@ import numpy as np
 log = logging.getLogger(__name__)
 
 
-def isbright(img: np.ndarray, label: str) -> bool:
+def isbright(img: np.ndarray, contour: np.ndarray, label: str) -> bool:
     b_mask = np.zeros(img.shape[:2], np.uint8)
+    _ = cv2.drawContours(b_mask, [contour], -1, (255, 255, 255), cv2.FILLED)
     b_mask = np.bool_(b_mask)
     mean = np.mean(img[b_mask])
     log.debug(f"Mean pixel value in segmented area: {str(mean)}")
