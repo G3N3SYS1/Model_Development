@@ -4,6 +4,7 @@ from pathlib import Path
 
 import cv2
 import numpy as np
+import utils.image as image
 from ultralytics.engine.results import Results
 
 log = logging.getLogger(__name__)
@@ -31,19 +32,13 @@ def segmentation_as_image(res: Results, output_dir):
                 return
 
             label = c.names[c.boxes.cls.tolist().pop()]
-            b_mask = np.zeros(img.shape[:2], np.uint8)
-
             # Create contour mask
             contour = np.asarray(c.masks.xy.pop()).astype(np.int32).reshape(-1, 1, 2)
-            _ = cv2.drawContours(b_mask, [contour], -1, (255, 255, 255), cv2.FILLED)
-
-            mask3ch = cv2.cvtColor(b_mask, cv2.COLOR_GRAY2BGR)
-            isolated = cv2.bitwise_and(mask3ch, img)
 
             # isolated = np.dstack([img, b_mask]) # Transparent background by adding alpha channel
 
-            x1, y1, x2, y2 = c.boxes.xyxy.cpu().numpy().squeeze().astype(np.int32)
-            iso_crop = isolated[y1:y2, x1:x2]
+            bbox = c.boxes.xyxy.cpu().numpy().squeeze().astype(np.int32)
+            iso_crop = image.crop(img, contour, bbox)
 
             if output_dir is None:
                 output_dir = os.path.join(os.getcwd(), "output")
