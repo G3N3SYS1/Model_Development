@@ -8,6 +8,9 @@ log = logging.getLogger(__name__)
 
 
 def isbright(img: np.ndarray, contour: np.ndarray, label: str) -> bool:
+    assert contour.size != 0, "Contour array is empty"
+    assert img.size != 0, "Image array is empty"
+
     b_mask = np.zeros(img.shape[:2], np.uint8)
     _ = cv2.drawContours(b_mask, [contour], -1, (255, 255, 255), cv2.FILLED)
     b_mask = np.bool_(b_mask)
@@ -18,6 +21,7 @@ def isbright(img: np.ndarray, contour: np.ndarray, label: str) -> bool:
 
 
 def pad(img: np.ndarray, resolution_wh: Tuple[int, int]) -> np.ndarray:
+    assert img.size != 0, "Image array is empty"
     width, height = resolution_wh
 
     old_h, old_w, channels = img.shape
@@ -37,6 +41,9 @@ def pad(img: np.ndarray, resolution_wh: Tuple[int, int]) -> np.ndarray:
 
 
 def crop(img: np.ndarray, contour: np.ndarray, bbox: np.ndarray) -> np.ndarray:
+    assert contour.size != 0, "Contour array is empty"
+    assert img.size != 0, "Image array is empty"
+
     b_mask = np.zeros(img.shape[:2], np.uint8)
 
     _ = cv2.drawContours(b_mask, [contour], -1, (255, 255, 255), cv2.FILLED)

@@ -50,6 +50,7 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source, conf, strea
         "LIF": False,
         "LIS": False,
         "RIF": False,
+        "DRL": False,
     }
 
     for r in results:
@@ -78,6 +79,12 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source, conf, strea
                     )
 
                     bbox = c.boxes.xyxy.cpu().numpy().squeeze().astype(np.int32)
+
+                    if contour.size == 0 or bbox.size == 0:
+                        log.info(
+                            "No valid bbox or segmentation masks could be parsed from the results."
+                        )
+                        continue
 
                     # Obtained a cropped image of a specific lamp instead of whole car
                     iso_crop = image.crop(img, contour, bbox)
