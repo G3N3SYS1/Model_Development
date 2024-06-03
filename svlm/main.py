@@ -1,7 +1,6 @@
 import logging
 
 import click
-import data
 import yolo
 from utils.config import Config, load_config
 
@@ -34,6 +33,8 @@ def cli(ctx, config):
 @cli.command()
 @click.pass_obj
 def augment(conf: Config):
+    import data
+
     dataset = data.load(
         conf.fiftyone.dataset_name,
         conf.fiftyone.augment.data_path,
@@ -45,6 +46,8 @@ def augment(conf: Config):
 @cli.command()
 @click.pass_obj
 def export(conf: Config):
+    import data
+
     dataset = data.load(
         conf.fiftyone.dataset_name,
         conf.fiftyone.augment.data_path,
@@ -74,6 +77,8 @@ def train(conf: Config):
 @click.argument("labels")
 @click.argument("output")
 def split(images, labels, output):
+    import data
+
     data.split(images, labels, output)
 
 
@@ -94,6 +99,8 @@ def predict(conf: Config):
 @cli.command()
 @click.argument("name")
 def delete(name):
+    import data
+
     data.delete(name)
 
 
