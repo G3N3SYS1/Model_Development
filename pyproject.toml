@@ -21,3 +21,7 @@ pre-commit = "^3.7.1"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.bandit]
+target = ["test", "supervision"]
+tests = ["B201", "B301", "B318", "B314", "B303", "B413", "B412", "B410"]

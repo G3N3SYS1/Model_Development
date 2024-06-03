@@ -1,6 +1,5 @@
 import logging
 import os
-import tkinter
 from pathlib import Path
 
 import cv2
@@ -64,7 +63,6 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source, conf, strea
                 source=crop, save=True, save_txt=True, stream=True
             )
             for lr in lamp_res:
-
                 img = lr.orig_img.copy()
                 for c in lr:
                     if c.boxes is None or c.masks is None:

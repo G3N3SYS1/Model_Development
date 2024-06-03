@@ -49,7 +49,7 @@ If you're using Albumentations on Windows, you may need to manually create the t
 
 ## Sample Datasets
 
-COCO dataset should be used for augmentation as it preserves bounding boxes and segmentation masks after importing into Fiftyone for augmentation. 
+COCO dataset should be used for augmentation as it preserves bounding boxes and segmentation masks after importing into Fiftyone for augmentation.
 After augmentation, dataset will be exported in the YOLO format.
 
 Dataset should be in the COCO format when used as input for Fiftyone as follows:

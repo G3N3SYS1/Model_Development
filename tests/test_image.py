@@ -64,7 +64,6 @@ def test_isbright(
     expected_result: bool,
     exception: Exception,
 ) -> None:
-
     with exception:
         result = image.isbright(img, contour, label)
         assert result == expected_result

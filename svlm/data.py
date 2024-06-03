@@ -16,7 +16,6 @@ def load(
     labels_path,
     dataset_type=DEFAULT_DATASET_TYPE,
 ):
-
     existing_datasets = fo.list_datasets()
     log.debug(f"Existing datasets: {existing_datasets}")
 
