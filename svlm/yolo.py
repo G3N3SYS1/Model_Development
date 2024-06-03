@@ -25,7 +25,6 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source, conf, strea
     filename = Path(source).stem
     output_path = os.path.join(output_dir, f"{filename}_annotated.mp4")
     os.makedirs(output_dir, exist_ok=True)
-    log.info(output_path)
 
     cap = cv2.VideoCapture(source)
     width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)  # float `width`
@@ -83,12 +82,13 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source, conf, strea
                     # Obtained a cropped image of a specific lamp instead of whole car
                     iso_crop = image.crop(img, contour, bbox)
 
-                    cv2.imshow("New lamp", iso_crop)
+                    cv2.imshow("Lamp View", iso_crop)
 
                     label = label.split("_", 1)[0]
 
                     # Calculate mean pixel value of cropped image of lamp
-                    lamps[label] = image.isbright(img, contour, label)
+                    if not lamps[label]:
+                        lamps[label] = image.isbright(img, contour, label)
 
                     log.info(f"{label} is lit up: {lamps[label]}")
 
