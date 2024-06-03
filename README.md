@@ -18,6 +18,11 @@ apt-get update
 apt-get -y install build-essential ffmpeg libsm6 libxext6
 ```
 
+Conda (Anaconda/Miniconda) will be used as the main virtual environment manager for this project. It allows for the creation of virtual environmtn
+and installation of non-python dependencies such as cudnn and cuda-toolkit.
+
+Poetry will be used to manage Python dependencies.
+
 ## Development
 Conda (Anaconda or Miniconda) is highly recommended to be used in development. A conda virtual environment should be created and dependencies should
 be installed within the venv.
@@ -29,7 +34,7 @@ conda create -n svlm python
 # Activate the SVLM venv
 conda activate svlm
 
-pip install -r requirements.txt
+poetry install
 
 # Install the Albumentations plugin for Fiftyone
 fiftyone plugins download https://github.com/jacobmarks/fiftyone-albumentations-plugin
@@ -66,3 +71,23 @@ yolo/
 ├─ labels/
 │  ├─ image1.txt
 ```
+
+## Contribution
+
+### Pre-commit tool
+This project uses the pre-commit tool to maintain code quality and consistency. Before submitting a pull request or making any commits, it is important to run the pre-commit tool to ensure that your changes meet the project's guidelines.
+
+To run the pre-commit tool, follow these steps:
+
+1. Install pre-commit by running the following command: `poetry install`. It will not only install pre-commit but also install all the deps and dev-deps of project
+
+2. Once pre-commit is installed, navigate to the project's root directory.
+
+3. Run the command `pre-commit run --all-files`. This will execute the pre-commit hooks configured for this project against the modified files. If any issues are found, the pre-commit tool will provide feedback on how to resolve them. Make the necessary changes and re-run the pre-commit command until all issues are resolved.
+
+4. You can also install pre-commit as a git hook by execute `pre-commit install`. Every time you made `git commit` pre-commit run automatically for you.
+
+### Docstrings
+All new functions and classes in `svlm` should include docstrings. This is a prerequisite for any new functions and classes to be added to the project.
+
+`svlm` adheres to the [Sphinx Python docstring style](https://google.github.io/styleguide/pyguide.html#383-functions-and-methods). Please refer to the style guide while writing docstrings for your contribution.
