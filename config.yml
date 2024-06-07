@@ -21,7 +21,8 @@ train:
 predict:
   vehicle_model_path: "./models/vehicle/weights/best.pt"
   lamp_model_path: "./models/lamp/weights/best.pt"
-  source: "/mnt/sta/test/20240502_Front_D2_PRIUS-5DR-HATCHBACK.mp4"
+  # source: "/mnt/sta/test/20240502_Front_D2_PRIUS-5DR-HATCHBACK.mp4"
+  source: "/mnt/c/Users/UVSS/AppData/Local/CapCut/Videos/track_test_merge.mp4"
   output_dir: "./output-predict"
   params:
-    conf: 0.3
+    conf: 0.85
