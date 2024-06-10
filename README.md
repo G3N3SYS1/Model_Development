@@ -47,6 +47,43 @@ Additional scripts are available in the `scripts/` directory which may be used f
 
 If you're using Albumentations on Windows, you may need to manually create the tmp/ directory in C drive.
 
+## Usage
+
+### Augmentation
+
+More frequent than not, a dataset may be augmented to synthetically generate new data based on existing data. This may be done by employing a number of different techniques such as cropping, and adjusting the hue, brightness, contrast or saturation of the image.
+
+However, augmentation must be applied with caution so as to not expose the model to data that is not an accurate representation of real-world data. For instance, distorting the image too much until the model is unable to identify the presence of a car.
+
+`svlm` enables augmentation by integrating with `Fiftyone` and `Albumentations`. Though, before proceeding with augmentation, the `config.yml` file must be updated with the paths to the dataset.
+
+To view and augment the dataset:
+```Bash
+python svlm\main.py augment
+```
+
+### Export
+
+After augmentation, the augmented images must be saved on Fiftyone in order for them to be persisted during export. Otherwise, only the original images will be exported.
+
+The `config.yml` file must be modified to include the path of the output directory and the name of the loaded dataset on Fiftyone's database.
+
+To export the augmented dataset to `COCODetectionDataset` format:
+```Bash
+python svlm\main.py export
+```
+
+### Split
+
+A dataset should be split to 3 seperate folders, train:test:val, and then structured according to the [YOLO dataset format][yolo-dataset-format] (see [Sample Datasets](#sample-datasets) section).
+
+To split and convert to YOLO format:
+```Bash
+# python svlm\main.py split IMAGES LABELS OUTPUT
+python svlm\main.py split ./coco-dataset/images ./coco-dataset/labels.json ./yolo-dataset
+```
+
+
 ## Sample Datasets
 
 COCO dataset should be used for augmentation as it preserves bounding boxes and segmentation masks after importing into Fiftyone for augmentation.
@@ -90,4 +127,9 @@ To run the pre-commit tool, follow these steps:
 ### Docstrings
 All new functions and classes in `svlm` should include docstrings. This is a prerequisite for any new functions and classes to be added to the project.
 
-`svlm` adheres to the [Sphinx Python docstring style](https://google.github.io/styleguide/pyguide.html#383-functions-and-methods). Please refer to the style guide while writing docstrings for your contribution.
+`svlm` adheres to the [Sphinx Python docstring style][sphinx-docstring-style]. Please refer to the style guide while writing docstrings for your contribution.
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+[yolo-dataset-format]: https://docs.ultralytics.com/datasets/segment/#dataset-yaml-format
+[sphinx-docstring-style]: https://google.github.io/styleguide/pyguide.html#383-functions-and-methods
