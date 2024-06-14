@@ -1,5 +1,5 @@
 import logging
-
+import data
 import click
 import yolo
 from utils.config import Config, load_config
@@ -93,14 +93,13 @@ def predict(conf: Config):
         conf.predict.output_dir,
         conf.predict.source,
         conf.predict.params.conf,
+        conf.predict.params.ref_pt,
     )
 
 
 @cli.command()
 @click.argument("name")
 def delete(name):
-    import data
-
     data.delete(name)
 
 

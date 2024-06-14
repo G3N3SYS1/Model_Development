@@ -1,9 +1,9 @@
 # Fiftyone data augmentation and splitting
 fiftyone:
-  dataset_name: "sta-toyota-prius-5dr-hatchback-auto-d2"
+  dataset_name: "pre-aug"
   augment:
-    data_path: "./datasets/test-dataset/images"
-    labels_path: "./datasets/test-dataset/result.json"
+    data_path: "./datasets/pre-aug/images"
+    labels_path: "./datasets/pre-aug/result.json"
   export:
     label_field: "segmentations"
     output_dir: "./export"
@@ -20,9 +20,12 @@ train:
 
 predict:
   vehicle_model_path: "./models/vehicle/weights/best.pt"
-  lamp_model_path: "./models/lamp/weights/best.pt"
+  lamp_model_path: "./models/lamp-v2/weights/best.pt"
   # source: "/mnt/sta/test/20240502_Front_D2_PRIUS-5DR-HATCHBACK.mp4"
-  source: "/mnt/c/Users/UVSS/AppData/Local/CapCut/Videos/track_test_merge.mp4"
+  source: "/mnt/c/Users/UVSS/AppData/Local/CapCut/Videos/track_test6.mp4"
   output_dir: "./output-predict"
   params:
-    conf: 0.85
+    conf: 0.5
+    ref_pt:
+      x: 1400 
+      y: 700

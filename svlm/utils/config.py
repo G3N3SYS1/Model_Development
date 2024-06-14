@@ -20,12 +20,18 @@ class Export:
         self.output_dir = output_dir
 
 
+class Point:
+    def __init__(self, x, y) -> None:
+        self.x = x
+        self.y = y
+
 class Params:
-    def __init__(self, imgsz, epochs, batch, conf) -> None:
+    def __init__(self, imgsz, epochs, batch, conf, ref_pt) -> None:
         self.imgsz = imgsz
         self.epochs = epochs
         self.batch = batch
         self.conf = conf
+        self.ref_pt: Point = ref_pt 
 
 
 class Train:
