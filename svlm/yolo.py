@@ -7,6 +7,7 @@ import extract
 import numpy as np
 import utils.image as image
 from ultralytics import YOLO
+import math
 
 log = logging.getLogger(__name__)
 
@@ -22,6 +23,7 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source, conf, strea
     lamp_model = YOLO(lamp_model_path)
 
     filename = Path(source).stem
+    output_dir = os.path.join(output_dir, f"{filename}")
     output_path = os.path.join(output_dir, f"{filename}_annotated.mp4")
     os.makedirs(output_dir, exist_ok=True)
 
@@ -38,21 +40,42 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source, conf, strea
     
     cv2.namedWindow("Lamp", cv2.WINDOW_NORMAL)
     cv2.resizeWindow("Lamp", 900, 640)
-    width_offset = 750
+    width_offset = 0
 
+    # lamps = {
+    #     "RVLL": False,
+    #     "FL2": False,
+    #     "HL1": False,
+    #     "HL2": False,
+    #     "LIF": False,
+    #     "LIS": False,
+    #     "RIF": False,
+    #     "DRL": False,
+    # }
     lamps = {
-        "FL1": False,
-        "FL2": False,
-        "HL1": False,
-        "HL2": False,
-        "LIF": False,
+        "SLL": False,
+        "SLR": False,
+        "CSL": False,
+        "RVLL": False,
+        "RVLR": False,
+        "LIR": False,
         "LIS": False,
-        "RIF": False,
-        "DRL": False,
+        "RIR": False,
+        "RLL": False,
+        "RLR": False,
+        "RFLL": False,
+        "RFLR": False
     }
     
     current_id = 0
     prev_id = 0
+    trigger_centroid = (1400,700)
+    tracking = False
+    prev_centroid = {
+        "centroid": trigger_centroid,
+        "in_bbox" : False
+        }
+
     
     while True:
         ret, frame = cap.read()
@@ -61,19 +84,18 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source, conf, strea
             break
         crop_frame = frame[0:int(height), 0+width_offset:int(width)]
 
-        results = vehicle_model.track(source=crop_frame, conf=conf, stream=stream, persist=True, verbose=False, tracker= "custom_tracker.yaml")
-
-    
+        results = vehicle_model.predict(source=crop_frame, conf=conf, stream=stream, verbose=False)
+        frame_number = cap.get(cv2.CAP_PROP_POS_FRAMES)
+        cv2.circle(frame, trigger_centroid, 5, (0,0,255), -1)
 
         
         for r in results:
             cv2.line(frame,(width_offset,0), (width_offset,int(height)), (255, 0, 0), 5)
-
-            if r.boxes.id is not None:
+            if r.boxes is not None:
                 try:
-                    current_id = r.boxes.id.numpy().astype(np.int32)[0]
-                    if current_id > prev_id:
-                        prev_id = current_id
+                    # current_id = r.boxes.id.numpy().astype(np.int32)[0]
+                    # if current_id > prev_id:
+                    #     prev_id = current_id
                         #    reset
                         lamps = {
                             "FL1": False,
@@ -88,26 +110,75 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source, conf, strea
                 except Exception as e:
                     print(e)
                     pass
-            #     for box in r.boxes:
-            #         id = box.id.numpy().squeeze().astype(np.int32)
-            #         x1, y1, x2, y2 = box.xyxy.cpu().squeeze().numpy().astype(np.int32)
-            #         x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
-            #         x1 += width_offset
-            #         x2 += width_offset
-            #         cX = int((x1+x2)/2)
-            #         cY = int((y1+y2)/2)
-            #         cv2.putText(frame,str(id),(cX,cY),cv2.FONT_HERSHEY_SIMPLEX, 5, (0, 255, 0), 5)
-            #         cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-            # cv2.imshow("Lamp", frame)
-            # out.write(frame)
+                # for box in r.boxes:
+                if len(r.boxes):
+                    for box in r.boxes:
+                        current_in_bbox = in_box(trigger_centroid, box.xyxy.cpu().squeeze().numpy().astype(np.int32))
+                        x1, y1, x2, y2 = box.xyxy.cpu().squeeze().numpy().astype(np.int32)
+                        x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
+                        x1 += width_offset
+                        x2 += width_offset
+                        cX = int((x1+x2)/2)
+                        cY = int((y1+y2)/2)
 
-            # crop = None
+
+                        if  current_in_bbox:
+                            if tracking:
+                                prev_centroid["centroid"] = (cX,cY)
+                            else:
+                                tracking = True
+                                prev_centroid["centroid"] = (cX,cY)
+                                print("Start tracking..")
+                                # print(f"cY: {cY} __ prev y: {prev_centroid['centroid'][1]}")
+                        else:
+                            # print(f"trigger cen: {trigger_centroid[1]} __ prev y: {prev_centroid['centroid'][1]}")
+                            if tracking and trigger_centroid[1] < prev_centroid["centroid"][1]:
+                                tracking = False
+                                print("Reset")
+
+
+                        # if tracking:
+                        #     print("tracking")
+                        #     if cY > trigger_centroid[1]:
+                        #         print("RESET1")
+                        # else:
+                        #     if not prev_centroid["in_bbox"]: # if prev centroid not in bbox
+                        #         # if current centroid not inbbox and current cen Y more than prev cen Y by 150
+                        #         if not current_in_bbox and\
+                        #         more_than_distance(cY,prev_centroid["centroid"][1],150) :
+                        #             print("RESET")
+                        #             tracking = False
+                        #         elif not tracking:
+                        #             tracking = True
+                        #             print("triggered")
+                        #             prev_centroid["centroid"] = (cX,cY)
+
+                            
+                        # prev_centroid["in_bbox"] = current_in_bbox
+                    
+                    # id = box.id.numpy().squeeze().astype(np.int32)
+                    # x1, y1, x2, y2 = box.xyxy.cpu().squeeze().numpy().astype(np.int32)
+                    # x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
+                    # x1 += width_offset
+                    # x2 += width_offset
+                    # cX = int((x1+x2)/2)
+                    # cY = int((y1+y2)/2)
+                    cv2.putText(frame,str(tracking),(cX,cY),cv2.FONT_HERSHEY_SIMPLEX, 5, (0, 255, 0), 5)
+                    cv2.circle(frame, (cX,cY), 5, (0,255,0), -1)
+                    cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                    # print(f"{is_in_box(trigger_centroid,box.xyxy.cpu().squeeze().numpy().astype(np.int32))}")
+            # cv2.imshow("Lamp", r.plot())
+            # out.write(r.plot())
+
+            crop = None
         
             # if sum(1 for v in lamps.values() if v) < 8:
             #     crop = extract.segmentation_as_image(r, output_dir)
             # else: crop = None
-
-            crop = extract.segmentation_as_image(r, output_dir)
+            
+            # crop = extract.segmentation_as_image(r, output_dir, frame_number)
+            # out.write(crop) if crop is not None else out.write(frame)
+            # cv2.imshow("Lamp", crop) if crop is not None else cv2.imshow("Lamp",frame)
 
             if crop is None:
                 out.write(frame)
@@ -154,7 +225,7 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source, conf, strea
                     # Pad cropped image to original resolution. To write to video output,
                     # frame must have same resolution as the video
                     h, w, _ = r.orig_img.shape
-                    img = image.pad(lr.orig_img.copy(), (width, height))
+                    img = image.pad(lr.plot().copy(), (width, height))
 
                     y = 300
 
@@ -183,3 +254,20 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source, conf, strea
 def val(model_path, source):
     model = YOLO(model_path)
     return model.val(data=source, split="val")
+
+def calculate_distance(point1, point2):
+    """Calculate distance between two points."""
+    x1, y1 = point1
+    x2, y2 = point2
+    return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+
+def in_box(centroid, box):
+    """Check if a centroid is inside a bounding box."""
+    x_centroid, y_centroid = centroid
+    x1, y1, x2, y2 = box
+    return x1 <= x_centroid <= x2 and y1 <= y_centroid <= y2
+
+def more_than_distance(y1, y2,dist):
+    """Calculate distance between two points."""
+    
+    return abs(y1-y2)>dist
