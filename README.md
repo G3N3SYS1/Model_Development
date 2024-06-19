@@ -3,13 +3,19 @@
 ## Pre-requisites
 Do ensure the following dependencies have been installed:
 - PyTorch (with GPU support)
-- cudnn and cuda-toolkit
-- conda
-- Visual Studio 2019 Build Tools (if on Windows)
+- cudnn and cuda-toolkit (with Nvidia GPU)
+- conda ([miniconda](https://docs.anaconda.com/miniconda/#quick-command-line-install) preferred) 
+- Visual Studio 2019 Build Tools (if on Windows and not Linux)
 
-The follwing packages cudnn and cuda-toolkit may be easily installed using conda:
+The following packages cudnn and cuda-toolkit may be easily installed using conda:
 ```
 conda install -c conda-forge cudnn cuda-toolkit
+```
+The following packages should also be installed for opencv (example displayed below only works for Debian-based distros):
+```
+apt-get update
+
+apt-get -y install build-essential ffmpeg libsm6 libxext6
 ```
 
 ## Development
