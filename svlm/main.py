@@ -92,7 +92,8 @@ def predict(conf: Config):
         conf.predict.lamp_model_path,
         conf.predict.output_dir,
         conf.predict.source,
-        conf.predict.params.conf,
+        conf.predict.params.vehicle_conf,
+        conf.predict.params.lamp_conf,
         conf.predict.params.ref_pt,
     )
 

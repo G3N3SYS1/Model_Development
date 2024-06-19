@@ -25,7 +25,8 @@ predict:
   source: "/mnt/c/Users/UVSS/AppData/Local/CapCut/Videos/track_test6.mp4"
   output_dir: "./output-predict"
   params:
-    conf: 0.5
+    vehicle_conf: 0.5
+    lamp_conf: 0.6
     ref_pt:
       x: 1400 
       y: 700

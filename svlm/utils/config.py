@@ -26,11 +26,12 @@ class Point:
         self.y = y
 
 class Params:
-    def __init__(self, imgsz, epochs, batch, conf, ref_pt) -> None:
+    def __init__(self, imgsz, epochs, batch, vehicle_conf, lamp_conf, ref_pt) -> None:
         self.imgsz = imgsz
         self.epochs = epochs
         self.batch = batch
-        self.conf = conf
+        self.vehicle_conf = vehicle_conf
+        self.lamp_conf = lamp_conf
         self.ref_pt: Point = ref_pt 
 
 

@@ -8,7 +8,6 @@ import numpy as np
 import utils.image as image
 from ultralytics import YOLO
 from utils.lamp import track
-import math
 
 log = logging.getLogger(__name__)
 
@@ -19,7 +18,7 @@ def train(model_path, dataset, imgsz, epochs, batch):
     return model.train(data=dataset, imgsz=imgsz, epochs=epochs, batch=batch, device=0)
 
 
-def predict(vehicle_model_path, lamp_model_path, output_dir, source, conf, ref_pt, stream=True):
+def predict(vehicle_model_path, lamp_model_path, output_dir, source, vehicle_conf, lamp_conf, ref_pt, stream=True):
     vehicle_model = YOLO(vehicle_model_path)
     lamp_model = YOLO(lamp_model_path)
 
@@ -43,7 +42,6 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source, conf, ref_p
     cv2.resizeWindow("Lamp", 900, 640)
     width_offset = 0
 
-    # Put in config?
     isfrontlamp = True
     lamps = resetlamp(isfrontlamp)
     istracking = False
@@ -58,68 +56,47 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source, conf, ref_p
         if not ret:
             break
         crop_frame = frame[0:int(height), 0+width_offset:int(width)]
-
-        results = vehicle_model.predict(source=crop_frame, conf=conf, stream=stream, verbose=False)
+        orig_frame = np.copy(frame)
+        results = vehicle_model.predict(source=crop_frame, conf=vehicle_conf, stream=stream, verbose=False)
         frame_number = cap.get(cv2.CAP_PROP_POS_FRAMES)
         cv2.circle(frame, ref_pt, 5, (0,0,255), -1)
         cv2.line(frame,(width_offset,0), (width_offset,int(height)), (255, 0, 0), 5)
         crop = None
     
         for r in results:
-            if len(r.boxes):
-                for box in r.boxes:
-                    # x1, y1, x2, y2 = box.xyxy.cpu().squeeze().numpy().astype(np.int32)
-                    # x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
-                    # # x1 += width_offset
-                    # # x2 += width_offset
-                    # cX = int((x1+x2)/2)
-                    # cY = int((y1+y2)/2)
-                    # # cv2.putText(frame,str(tracking),(cX,cY),cv2.FONT_HERSHEY_SIMPLEX, 5, (0, 255, 0), 5)
-                    # cv2.circle(frame, (cX,cY), 5, (0,255,0), -1)
-                    # cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            for c in r:
+                x1, y1, x2, y2 = c.boxes.xyxy.cpu().squeeze().numpy().astype(np.int32)
+                x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
+                # x1 += width_offset
+                # x2 += width_offset
+                cX = int((x1+x2)/2)
+                cY = int((y1+y2)/2)
+                cv2.circle(frame, (cX,cY), 5, (0,255,0), -1)
+                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
-                    box_xyxy = box.xyxy.cpu().squeeze().numpy().astype(np.int32)
-                    isreset, istracking, prev_pt, tocrop = track(
-                        box_xyxy, 
-                        ref_pt, 
-                        istracking, 
-                        prev_pt
-                    )
+                box_xyxy = c.boxes.xyxy.cpu().squeeze().numpy().astype(np.int32)
+                isreset, istracking, prev_pt, tocrop = track(
+                    box_xyxy, 
+                    ref_pt, 
+                    istracking, 
+                    prev_pt
+                )
 
-                    if tocrop:
-                        if isreset:
-                            lamps = resetlamp(isfrontlamp)
-                        crop = extract.segmentation_as_image(r, output_dir, frame_number)
-                    else:
-                        crop = None
-
-
-                    # isreset, istracking, prev_pt, tocrop = track(
-                    #     box.xyxy.cpu().squeeze().numpy().astype(np.int32),
-                    #     ref_pt,
-                    #     istracking,
-                    #     prev_pt
-                    # )
-                    # if not tocrop:
-                    #     crop = None
-                    #     continue
-                    # if isreset:
-                    #     lamps = resetlamp(isfrontlamp)
-                    # crop = extract.segmentation_as_image(r, output_dir, frame_number)
-                        
-                    
-            # crop = None
-               
-                        
-            # out.write(crop) if crop is not None else out.write(frame)
-            # cv2.imshow("Lamp", crop) if crop is not None else cv2.imshow("Lamp",frame)
+                if tocrop:
+                    if isreset:
+                        lamps = resetlamp(isfrontlamp)
+                        img_name = Path(r.path).stem
+                    crop = extract.segmentation_as_image(c, output_dir, frame_number, orig_frame, img_name)
+                    break
+                else:
+                    crop = None
 
             if crop is None:
                 out.write(frame)
                 cv2.imshow("Lamp", frame)
             else:
                 lamp_res = lamp_model.predict(
-                    source=crop, save=True, save_txt=True, stream=True, verbose=False
+                    source=crop, save=False, save_txt=False, stream=True, conf=lamp_conf, verbose=False
                 )
                 for lr in lamp_res:
                     img = lr.orig_img.copy()
@@ -176,8 +153,8 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source, conf, ref_p
                             2,
                             cv2.LINE_AA,
                         )
-                    cv2.imshow("Lamp", img)
-                    out.write(img)
+                cv2.imshow("Lamp", img)
+                out.write(img)
 
         if cv2.waitKey(1) & 0xFF == ord("q"):
             exit()

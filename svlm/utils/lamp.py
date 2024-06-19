@@ -1,9 +1,7 @@
 import numpy as np
-import math
 
 def track(box: np.ndarray, ref_pt, istracking, prev_pt) -> bool:
     isreset=False
-    tocrop = False
     x1, y1, x2, y2 = box
     cX = int((x1+x2)/2)
     cY = int((y1+y2)/2)
@@ -17,6 +15,7 @@ def track(box: np.ndarray, ref_pt, istracking, prev_pt) -> bool:
             print("Start tracking..")
         prev_pt = det_pt 
     else:
+        tocrop = False
         if istracking and ref_pt[1] < prev_pt[1]:
             istracking = False
             isreset = True
