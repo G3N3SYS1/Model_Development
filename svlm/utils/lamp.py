@@ -1,6 +1,7 @@
 import numpy as np
+import operator
 
-def track(box: np.ndarray, ref_pt, istracking, prev_pt) -> bool:
+def track(box: np.ndarray, ref_pt, istracking, prev_pt, isfrontlamp) -> bool:
     isreset=False
     x1, y1, x2, y2 = box
     cX = int((x1+x2)/2)
@@ -16,7 +17,8 @@ def track(box: np.ndarray, ref_pt, istracking, prev_pt) -> bool:
         prev_pt = det_pt 
     else:
         tocrop = False
-        if istracking and ref_pt[1] < prev_pt[1]:
+        comparison_operator = operator.lt if isfrontlamp else operator.gt
+        if istracking and comparison_operator(ref_pt[1], prev_pt[1]):
             istracking = False
             isreset = True
             

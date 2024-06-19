@@ -7,7 +7,7 @@ import numpy as np
 log = logging.getLogger(__name__)
 
 
-def isbright(img: np.ndarray, contour: np.ndarray, label: str) -> bool:
+def isbright(img: np.ndarray, contour: np.ndarray, label: str, mlt: dict) -> bool:
     assert contour.size != 0, "Contour array is empty"
     assert img.size != 0, "Image array is empty"
 
@@ -17,7 +17,10 @@ def isbright(img: np.ndarray, contour: np.ndarray, label: str) -> bool:
     mean = np.mean(img[b_mask])
     log.debug(f"Mean pixel value in segmented area: {str(mean)}")
 
-    return bool(mean > 60 if label == "LIS" else mean > 200)
+    try:
+        return bool(mean > mlt[label])
+    except KeyError:
+        return bool(mean > mlt["default"])
 
 
 def pad(img: np.ndarray, resolution_wh: Tuple[int, int]) -> np.ndarray:
@@ -53,3 +56,11 @@ def crop(img: np.ndarray, contour: np.ndarray, bbox: np.ndarray) -> np.ndarray:
 
     x1, y1, x2, y2 = bbox
     return isolated[y1:y2, x1:x2]
+
+def match_label(mean, mlt, label):
+    for threshold, labels in mlt.items():
+        if label in labels and mean > threshold:
+            # print(f"thresh for {label} is {threshold}")
+            return True
+    # print(f"thresh for {label} is {threshold}")
+    return False

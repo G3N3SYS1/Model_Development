@@ -94,7 +94,9 @@ def predict(conf: Config):
         conf.predict.source,
         conf.predict.params.vehicle_conf,
         conf.predict.params.lamp_conf,
-        conf.predict.params.ref_pt,
+        conf.predict.params.d_angle,
+        conf.predict.ref_pt,
+        conf.mean_light_thresh,
     )
 
 

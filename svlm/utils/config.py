@@ -26,14 +26,18 @@ class Point:
         self.y = y
 
 class Params:
-    def __init__(self, imgsz, epochs, batch, vehicle_conf, lamp_conf, ref_pt) -> None:
+    def __init__(self, imgsz, epochs, batch, vehicle_conf, lamp_conf, d_angle) -> None:
         self.imgsz = imgsz
         self.epochs = epochs
         self.batch = batch
         self.vehicle_conf = vehicle_conf
         self.lamp_conf = lamp_conf
-        self.ref_pt: Point = ref_pt 
+        self.d_angle = d_angle
 
+class RefPt:
+    def __init__(self, d2, d3) -> None:
+        self.d2: Point = d2
+        self.d3: Point = d3
 
 class Train:
     def __init__(self, base_model_path, dataset, params) -> None:
@@ -44,20 +48,22 @@ class Train:
 
 class Predict:
     def __init__(
-        self, vehicle_model_path, lamp_model_path, source, output_dir, params
+        self, vehicle_model_path, lamp_model_path, source, output_dir, params, ref_pt
     ) -> None:
         self.vehicle_model_path: str = vehicle_model_path
         self.lamp_model_path: str = lamp_model_path
         self.source = source
         self.output_dir: str = output_dir
         self.params: Params = params
-
+        self.ref_pt: RefPt = ref_pt 
 
 class Config:
-    def __init__(self, fiftyone, train, predict) -> None:
+    def __init__(self, fiftyone, train, predict, mean_light_thresh) -> None:
         self.fiftyone: Fiftyone = fiftyone
         self.train: Train = train
         self.predict: Predict = predict
+        self.mean_light_thresh = mean_light_thresh
+
 
 
 conf: Config | None = None
