@@ -41,8 +41,10 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source,
     
     cv2.namedWindow("Lamp", cv2.WINDOW_NORMAL)
     cv2.resizeWindow("Lamp", 900, 640)
-    width_offset = 0
-
+    test_lamp = {
+        "RFLL" : False,
+        "RFLR" : False
+    }
     isfrontlamp = True if d_angle == 'd1' or d_angle == 'd2' else False
     lamps = resetlamp(isfrontlamp)
     istracking = False
@@ -54,28 +56,20 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source,
 
         if not ret:
             break
-        crop_frame = frame[0:int(height), 0+width_offset:int(width)]
+        crop_frame = frame[0:int(height), 0:int(width)]
         orig_frame = np.copy(frame)
         results = vehicle_model.predict(source=crop_frame, conf=vehicle_conf, stream=stream, verbose=False)
         frame_number = cap.get(cv2.CAP_PROP_POS_FRAMES)
         cv2.circle(frame, ref_pt, 5, (0,0,255), -1)
-        cv2.line(frame,(width_offset,0), (width_offset,int(height)), (255, 0, 0), 5)
+        # cv2.line(frame,(0,0), (0,int(height)), (255, 0, 0), 5)
         crop = None
         
         for r in results:
             for c in r:
-                x1, y1, x2, y2 = c.boxes.xyxy.cpu().squeeze().numpy().astype(np.int32)
-                x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
-                # x1 += width_offset
-                # x2 += width_offset
-                cX = int((x1+x2)/2)
-                cY = int((y1+y2)/2)
-                cv2.circle(frame, (cX,cY), 5, (0,255,0), -1)
-                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-
-                box_xyxy = c.boxes.xyxy.cpu().squeeze().numpy().astype(np.int32)
+                bbox = c.boxes.xyxy.cpu().squeeze().numpy().astype(np.int32)
+                frame = image.draw_bbox(frame, bbox, isfrontlamp)
                 isreset, istracking, prev_pt, tocrop = track(
-                    box_xyxy, 
+                    bbox, 
                     ref_pt, 
                     istracking, 
                     prev_pt,
@@ -86,18 +80,22 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source,
                     if isreset:
                         lamps = resetlamp(isfrontlamp)
                         img_name = Path(r.path).stem
+                        test_lamp = {
+                            "RFLL" : False,
+                            "RFLR" : False
+                        }
                     else:
                         if sum(1 for v in lamps.values() if v) < len(lamps):
                             crop = extract.segmentation_as_image(c, output_dir, frame_number, orig_frame, img_name)
                             break
-                        else: 
+                        elif istracking: 
                             # Get the size of the text
-                            text_size, _ = cv2.getTextSize("PASS", cv2.FONT_HERSHEY_SIMPLEX, 5, 5)
+                            text_size, _ = cv2.getTextSize("All Pass", cv2.FONT_HERSHEY_SIMPLEX, 5, 5)
                             # Calculate the position to start writing text (centered in the bbox)
-                            text_x = int((x1 + x2 - text_size[0]) / 2)
-                            text_y = int((y1+ y2 + text_size[1]) / 2)
+                            text_x = int((bbox[0] + bbox[2] - text_size[0]) / 2)
+                            text_y = int((bbox[1] + bbox[3] + text_size[1]) / 2)
                             # Write the text on the image
-                            cv2.putText(frame, "PASS", (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 5, (0, 255, 0), 5)
+                            cv2.putText(frame, "All Pass", (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 5, (0, 255, 0), 5)
                 else:
                     crop = None
 
@@ -119,15 +117,20 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source,
                             continue
                         label = c.names[c.boxes.cls.tolist().pop()].split("_", 1)[0]
                         
-                        if "RFLR" in label or "RFLL" in label:
-                            lamps[label] = True
-                            continue
+                        
 
                         contour = (
                             np.asarray(c.masks.xy.pop()).astype(np.int32).reshape(-1, 1, 2)
                         )
 
                         bbox = c.boxes.xyxy.cpu().numpy().squeeze().astype(np.int32)
+
+                        if label == "RIS":
+                            continue
+                        img = image.draw_bbox(img, bbox, isfrontlamp, label)
+                        if "RFLR" in label or "RFLL" in label:
+                            test_lamp[label] = True
+                            continue
 
                         if contour.size == 0 or bbox.size == 0:
                             log.info(
@@ -136,37 +139,35 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source,
                             continue
 
                         # Obtained a cropped image of a specific lamp instead of whole car
-                        iso_crop = image.crop(img, contour, bbox)
+                        iso_crop = image.crop(lr.orig_img, contour, bbox)
 
-                        cv2.imshow("Lamp View", iso_crop) if "LIS" in label else None
+                        cv2.imshow("Lamp View", iso_crop) if "LIR" in label else None
 
 
                         # Calculate mean pixel value of cropped image of lamp
                         if not lamps[label]:
-                            lamps[label] = image.isbright(img, contour, label, mean_light_thresh)
+                            lamps[label] = image.isbright(lr.orig_img, contour, label, mean_light_thresh)
 
                         log.info(f"{label} is lit up: {lamps[label]}")
 
                     # Pad cropped image to original resolution. To write to video output,
                     # frame must have same resolution as the video
                     h, w, _ = r.orig_img.shape
-                    img = image.pad(lr.plot(), (width, height))
+                    img = image.pad(img, (width, height))
 
                     y = 300
 
-                    
-                    for key in lamps.keys():
+                    for key, value in lamps.items():
                         y += 50
-                        cv2.putText(
-                            img,
-                            f"{key} is lit: {lamps[key]}",
-                            (1600, y),
-                            cv2.FONT_HERSHEY_SIMPLEX,
-                            1,
-                            (0, 255, 0) if lamps[key] else (0, 0, 255)  ,
-                            2,
-                            cv2.LINE_AA,
-                        )
+                        if key =="RIS":
+                            continue
+                        img = image.draw_texts(
+                            img, 
+                            key, 
+                            test_lamp[key] if key in ["RFLL", "RFLR"] else value, 
+                            1600, y, 
+                            isfrontlamp
+                        ) 
                 cv2.imshow("Lamp", img)
                 out.write(img)
 
@@ -189,60 +190,23 @@ def resetlamp(isfrontlamp: bool):
             "HLL": False,
             "HLR": False,
             "LIF": False,
-            "RIS": False,
             "RIF": False,
             "DRL": False,
-
+            "RIS": True,
         }
     else:
         lamps = {
-            "SLL": False,
-            "SLR": False,
-            "CSL": False,
             "RVLL": False,
-            "RVLR": False,
             "LIR": False,
-            "LIS": False,
-            "RIR": False,
             "RLL": False,
+            "SLL": False,
+            "RFLL": True,
+            "CSL": False,
+            "RVLR": False,
+            "RIR": False,
             "RLR": False,
-            "RFLL": False,
-            "RFLR": False
+            "SLR": False,
+            "RFLR": True,
+            "LIS": False,
         }
     return lamps
-
-def process_C(c, lamps):
-    if c.boxes is None or c.masks is None:
-        log.info(
-            "No bbox or segmentation masks found in prediction results."
-        )
-        return None
-    label = c.names[c.boxes.cls.tolist().pop()]
-    print(f"label: {label}")
-
-
-    contour = (
-        np.asarray(c.masks.xy.pop()).astype(np.int32).reshape(-1, 1, 2)
-    )
-
-    bbox = c.boxes.xyxy.cpu().numpy().squeeze().astype(np.int32)
-
-    if contour.size == 0 or bbox.size == 0:
-        log.info(
-            "No valid bbox or segmentation masks could be parsed from the results."
-        )
-        return None
-    img = c.orig_img.copy()
-    # Obtained a cropped image of a specific lamp instead of whole car
-    iso_crop = image.crop(img, contour, bbox)
-
-    cv2.imshow("Lamp View", iso_crop) if "RLR" in label else None
-
-    label = label.split("_", 1)[0]
-
-    # Calculate mean pixel value of cropped image of lamp
-    if not lamps[label]:
-        lamps[label] = image.isbright(img, contour, label)
-
-    log.info(f"{label} is lit up: {lamps[label]}")
-    return lamps[label]
