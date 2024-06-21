@@ -87,17 +87,17 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source,
                         lamps = resetlamp(isfrontlamp)
                         img_name = Path(r.path).stem
                     else:
-                        for v in lamps.values():
-                            if not v:
-                                crop = extract.segmentation_as_image(c, output_dir, frame_number, orig_frame, img_name)
-                                break
-                        # Get the size of the text
-                        text_size, _ = cv2.getTextSize("PASS", cv2.FONT_HERSHEY_SIMPLEX, 5, 5)
-                        # Calculate the position to start writing text (centered in the bbox)
-                        text_x = int((x1 + x2 - text_size[0]) / 2)
-                        text_y = int((y1+ y2 + text_size[1]) / 2)
-                         # Write the text on the image
-                        cv2.putText(frame, "PASS", (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 5, (0, 255, 0), 5)
+                        if sum(1 for v in lamps.values() if v) < len(lamps):
+                            crop = extract.segmentation_as_image(c, output_dir, frame_number, orig_frame, img_name)
+                            break
+                        else: 
+                            # Get the size of the text
+                            text_size, _ = cv2.getTextSize("PASS", cv2.FONT_HERSHEY_SIMPLEX, 5, 5)
+                            # Calculate the position to start writing text (centered in the bbox)
+                            text_x = int((x1 + x2 - text_size[0]) / 2)
+                            text_y = int((y1+ y2 + text_size[1]) / 2)
+                            # Write the text on the image
+                            cv2.putText(frame, "PASS", (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 5, (0, 255, 0), 5)
                 else:
                     crop = None
 
