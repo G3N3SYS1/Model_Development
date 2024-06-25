@@ -16,8 +16,8 @@ def isbright(img: np.ndarray, contour: np.ndarray, label: str, mlt: dict) -> boo
     _ = cv2.drawContours(b_mask, [contour], -1, (255, 255, 255), cv2.FILLED)
     b_mask = np.bool_(b_mask)
     mean = np.mean(img[b_mask])
-    if "LIR" in label:
-        log.debug(f"Mean pixel value in segmented area: {str(mean)}")
+    # if "LIR" in label:
+    log.debug(f"Mean pixel value in segmented area: {str(mean)}")
 
     try:
         return bool(mean > mlt[label])
@@ -41,6 +41,7 @@ def pad(img: np.ndarray, resolution_wh: Tuple[int, int]) -> np.ndarray:
         int(y_center) : int(y_center + old_h),
         int(x_center) : int(x_center + old_w),
     ] = img
+    
 
     return frame
 
@@ -67,7 +68,7 @@ def draw_bbox(img: np.ndarray, bbox: np.ndarray, isfrontlamp, key: str = None):
     cY = int((y1 + y2) / 2)
     
     if key:
-        cv2.rectangle(img, (x1, y1), (x2, y2), colors[key], 3)
+        cv2.rectangle(img, (x1, y1), (x2, y2), colors[key], 2)
     else:
         cv2.circle(img, (cX, cY), 5, (0, 255, 0), -1)
         cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
@@ -94,18 +95,33 @@ def draw_texts(img: np.ndarray, key: str, value, x, y, isfrontlamp):
     
     return img
 
+def draw_conf(img: np.ndarray, key: str, value: float, x, y, isfrontlamp):
+    colors = get_lamp_colour(isfrontlamp)
+    cv2.putText(img, f"{key}: ", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, colors[key], 2)
+    text_size, _ = cv2.getTextSize(f"{key}: ", cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
+    cv2.putText(
+        img, 
+        str(value), 
+        (x + text_size[0], y), 
+        cv2.FONT_HERSHEY_SIMPLEX, 
+        1, 
+        (255, 255, 255) , 2
+    )
+    
+    return img
+
 
 def get_lamp_colour(isfrontlamp: bool = True):
     if isfrontlamp:
         return {
-            "FLR": (0, 0, 255),     # Red for FLR
-            "FLL": (0, 128, 255),   # Orange for FLL
-            "HLL": (0, 255, 255),   # Yellow for HLL
-            "HLR": (0, 255, 0),     # Green for HLR
-            "LIF": (255, 255, 0),   # Cyan for LIF
-            "RIS": (255, 165, 0),   # Orange-Yellow for RIS
-            "RIF": (255, 102, 0),   # Orange-Red for RIF
-            "DRL": (255, 0, 0)      # Bright Red for DRL
+            "FLR": (0, 0, 255),     # Red
+            "FLL": (0, 128, 255),   # Orange
+            "HLL": (0, 255, 255),   # Yellow
+            "HLR": (0, 255, 0),     # Green
+            "LIF": (255, 255, 0),   # Light blue
+            "RIS": (255, 165, 0),   # Not used
+            "RIF": (208, 118, 0),   # Dark blue
+            "DRL": (204, 0, 102),    # Purple-Blue
         }
     else:
         return {

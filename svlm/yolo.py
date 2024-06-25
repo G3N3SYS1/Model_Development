@@ -46,6 +46,7 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source,
         "RFLR" : False
     }
     isfrontlamp = True if d_angle == 'd1' or d_angle == 'd2' else False
+    conf_list = init_lampconf(isfrontlamp)
     lamps = resetlamp(isfrontlamp)
     istracking = False
     ref_pt = tuple(ref_pt[d_angle].values())    
@@ -125,9 +126,11 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source,
 
                         bbox = c.boxes.xyxy.cpu().numpy().squeeze().astype(np.int32)
 
-                        if label == "RIS":
+                        if label == "RIS" or label == "DRL" and c.boxes.conf.item() < 0.8:
                             continue
                         img = image.draw_bbox(img, bbox, isfrontlamp, label)
+                        conf_list[label] = float(round(c.boxes.conf.item(), 2))
+
                         if "RFLR" in label or "RFLL" in label:
                             test_lamp[label] = True
                             continue
@@ -141,7 +144,7 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source,
                         # Obtained a cropped image of a specific lamp instead of whole car
                         iso_crop = image.crop(lr.orig_img, contour, bbox)
 
-                        cv2.imshow("Lamp View", iso_crop) if "LIR" in label else None
+                        cv2.imshow("Lamp View", iso_crop)# if "FLL" in label else None
 
 
                         # Calculate mean pixel value of cropped image of lamp
@@ -156,7 +159,13 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source,
                     img = image.pad(img, (width, height))
 
                     y = 300
+                    for k,v in conf_list.items():
+                        y += 50
+                        if k =="RIS":
+                            continue
+                        img = image.draw_conf(img, k, v, 100, y, isfrontlamp)
 
+                    y = 300                    
                     for key, value in lamps.items():
                         y += 50
                         if key =="RIS":
@@ -198,6 +207,7 @@ def resetlamp(isfrontlamp: bool):
         lamps = {
             "RVLL": False,
             "LIR": False,
+            "LIS": False,
             "RLL": False,
             "SLL": False,
             "RFLL": True,
@@ -207,6 +217,34 @@ def resetlamp(isfrontlamp: bool):
             "RLR": False,
             "SLR": False,
             "RFLR": True,
-            "LIS": False,
+        }
+    return lamps
+
+def init_lampconf(isfrontlamp: bool):
+    if isfrontlamp:
+        lamps = {
+            "FLR": 0,
+            "FLL": 0,
+            "HLL": 0,
+            "HLR": 0,
+            "LIF": 0,
+            "RIF": 0,
+            "DRL": 0,
+            "RIS": 0
+        }
+    else:
+        lamps = {
+            "RVLL": 0,
+            "LIR": 0,
+            "LIS": 0,
+            "RLL": 0,
+            "SLL": 0,
+            "RFLL": 0,
+            "CSL": 0,
+            "RVLR": 0,
+            "RIR": 0,
+            "RLR": 0,
+            "SLR": 0,
+            "RFLR": 0,
         }
     return lamps
