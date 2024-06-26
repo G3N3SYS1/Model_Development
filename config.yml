@@ -19,25 +19,16 @@ train:
     conf: 0.3
 
 predict:
-  vehicle_model_path: "./models/vehicle-d3/weights/best.pt"
-  lamp_model_path: "./models/lamp-d3-0-tolerance/weights/best.pt"
-  # lamp_model_path: "./models/lamp-d2-v2/weights/best.pt"
-  # source: "/mnt/sta/test/20240502_Front_D2_PRIUS-5DR-HATCHBACK.mp4"
-  source: "/mnt/c/Users/UVSS/AppData/Local/CapCut/Videos/prius25_D3.mp4"
+  vehicle_model_path: "./models/vehicle-d2/weights/best.pt"
+  lamp_model_path: "./models/lamp-d2-v3/weights/best.pt"
+  source: "/mnt/c/Users/UVSS/AppData/Local/CapCut/Videos/demo_front.mp4"
   output_dir: "./output-predict"
   params:
-    vehicle_conf: 0.5
+    vehicle_conf: 0.8
     lamp_conf: 0.5
-    d_angle: "d3"
-  ref_pt:
-    d2:
+    d_angle: "d2"
+    ref_pt:
       x: 1400
       y: 700
-    d3:
-      x: 1000
-      y: 400
-mean_light_thresh:
-  LIS: 60
-  SLL: 100
-  RLR: 150
-  default: 200
+    mean_light_thresh:
+      default: 200

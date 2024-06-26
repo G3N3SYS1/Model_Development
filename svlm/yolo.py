@@ -41,15 +41,16 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source,
     
     cv2.namedWindow("Lamp", cv2.WINDOW_NORMAL)
     cv2.resizeWindow("Lamp", 900, 640)
+
+    # This is only use to filter out reflectors
     test_lamp = {
         "RFLL" : False,
         "RFLR" : False
     }
     isfrontlamp = True if d_angle == 'd1' or d_angle == 'd2' else False
-    conf_list = init_lampconf(isfrontlamp)
     lamps = resetlamp(isfrontlamp)
     istracking = False
-    ref_pt = tuple(ref_pt[d_angle].values())    
+    ref_pt = tuple(ref_pt.values())    
     prev_pt = ref_pt
     
     while True:
@@ -57,18 +58,18 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source,
 
         if not ret:
             break
-        crop_frame = frame[0:int(height), 0:int(width)]
         orig_frame = np.copy(frame)
-        results = vehicle_model.predict(source=crop_frame, conf=vehicle_conf, stream=stream, verbose=False)
+        results = vehicle_model.predict(source=orig_frame, conf=vehicle_conf, stream=stream, verbose=False)
         frame_number = cap.get(cv2.CAP_PROP_POS_FRAMES)
         cv2.circle(frame, ref_pt, 5, (0,0,255), -1)
-        # cv2.line(frame,(0,0), (0,int(height)), (255, 0, 0), 5)
         crop = None
         
         for r in results:
             for c in r:
                 bbox = c.boxes.xyxy.cpu().squeeze().numpy().astype(np.int32)
                 frame = image.draw_bbox(frame, bbox, isfrontlamp)
+                
+                # track vehicle
                 isreset, istracking, prev_pt, tocrop = track(
                     bbox, 
                     ref_pt, 
@@ -81,13 +82,21 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source,
                     if isreset:
                         lamps = resetlamp(isfrontlamp)
                         img_name = Path(r.path).stem
+                        
+                        # This is only use to filter out reflectors
                         test_lamp = {
                             "RFLL" : False,
                             "RFLR" : False
                         }
                     else:
-                        if sum(1 for v in lamps.values() if v) < len(lamps):
-                            crop = extract.segmentation_as_image(c, output_dir, frame_number, orig_frame, img_name)
+                        if sum(1 for v in lamps.values() if v[0]) < len(lamps):
+                            crop = extract.segmentation_as_image(
+                                c, 
+                                output_dir, 
+                                frame_number, 
+                                orig_frame, 
+                                img_name
+                            )
                             break
                         elif istracking: 
                             # Get the size of the text
@@ -126,10 +135,10 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source,
 
                         bbox = c.boxes.xyxy.cpu().numpy().squeeze().astype(np.int32)
 
-                        if label == "RIS" or label == "DRL" and c.boxes.conf.item() < 0.8:
+                        if label == "RIS" or label == "DRL" and c.boxes.conf.item() < 0.7:
                             continue
                         img = image.draw_bbox(img, bbox, isfrontlamp, label)
-                        conf_list[label] = float(round(c.boxes.conf.item(), 2))
+                        lamps[label][1] = float(round(c.boxes.conf.item(), 2))
 
                         if "RFLR" in label or "RFLL" in label:
                             test_lamp[label] = True
@@ -148,22 +157,15 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source,
 
 
                         # Calculate mean pixel value of cropped image of lamp
-                        if not lamps[label]:
-                            lamps[label] = image.isbright(lr.orig_img, contour, label, mean_light_thresh)
+                        if not lamps[label][0]:
+                            lamps[label][0] = image.isbright(lr.orig_img, contour, label, mean_light_thresh)
 
-                        log.info(f"{label} is lit up: {lamps[label]}")
+                        log.info(f"{label} is lit up: {lamps[label][0]}")
 
                     # Pad cropped image to original resolution. To write to video output,
                     # frame must have same resolution as the video
                     h, w, _ = r.orig_img.shape
-                    img = image.pad(img, (width, height))
-
-                    y = 300
-                    for k,v in conf_list.items():
-                        y += 50
-                        if k =="RIS":
-                            continue
-                        img = image.draw_conf(img, k, v, 100, y, isfrontlamp)
+                    img = image.pad(img, (w, h))
 
                     y = 300                    
                     for key, value in lamps.items():
@@ -173,10 +175,11 @@ def predict(vehicle_model_path, lamp_model_path, output_dir, source,
                         img = image.draw_texts(
                             img, 
                             key, 
-                            test_lamp[key] if key in ["RFLL", "RFLR"] else value, 
-                            1600, y, 
+                            test_lamp[key] if key in ["RFLL", "RFLR"] else value[0], 
+                            (1600, y), 
                             isfrontlamp
                         ) 
+                        img = image.draw_conf(img, key, value[1], (100, y), isfrontlamp)
                 cv2.imshow("Lamp", img)
                 out.write(img)
 
@@ -191,60 +194,46 @@ def val(model_path, source):
 
 
 def resetlamp(isfrontlamp: bool):
-    print("Reset lamp status..")
-    if isfrontlamp:
-        lamps = {
-            "FLR": False,
-            "FLL": False,
-            "HLL": False,
-            "HLR": False,
-            "LIF": False,
-            "RIF": False,
-            "DRL": False,
-            "RIS": True,
-        }
-    else:
-        lamps = {
-            "RVLL": False,
-            "LIR": False,
-            "LIS": False,
-            "RLL": False,
-            "SLL": False,
-            "RFLL": True,
-            "CSL": False,
-            "RVLR": False,
-            "RIR": False,
-            "RLR": False,
-            "SLR": False,
-            "RFLR": True,
-        }
-    return lamps
+    """Reset the status of lamps (on/off) and their detection confidence scores.
 
-def init_lampconf(isfrontlamp: bool):
+    This function resets the status of lamps and their associated detection confidence 
+    scores based on whether the video feed is from the front view (D1, D2) or the back 
+    view (D3, D4) of the vehicle.
+
+    :param isfrontlamp: Flag indicating whether the video feed is from the front
+     view (D1, D2).
+    :type isfrontlamp: bool
+
+    :return: A dictionary containing lamp keys mapped to lists 
+    [on/off status, detection confidence score]. The initial status and score 
+    are set based on the front or back view.
+    :rtype: dict
+    """
+    log.info("Reset lamp status..")
+    
     if isfrontlamp:
-        lamps = {
-            "FLR": 0,
-            "FLL": 0,
-            "HLL": 0,
-            "HLR": 0,
-            "LIF": 0,
-            "RIF": 0,
-            "DRL": 0,
-            "RIS": 0
+        return {
+            "FLR": [False, 0],
+            "FLL": [False, 0],
+            "HLL": [False, 0],
+            "HLR": [False, 0],
+            "LIF": [False, 0],
+            "RIF": [False, 0],
+            "DRL": [False, 0],
+            "RIS": [True, 0],
         }
     else:
-        lamps = {
-            "RVLL": 0,
-            "LIR": 0,
-            "LIS": 0,
-            "RLL": 0,
-            "SLL": 0,
-            "RFLL": 0,
-            "CSL": 0,
-            "RVLR": 0,
-            "RIR": 0,
-            "RLR": 0,
-            "SLR": 0,
-            "RFLR": 0,
+        return {
+            "RVLL": [False, 0],
+            "LIR": [False, 0],
+            "LIS": [False, 0],
+            "RLL": [False, 0],
+            "SLL": [False, 0],
+            "RFLL": [True, 0],
+            "CSL": [False, 0],
+            "RVLR": [False, 0],
+            "RIR": [False, 0],
+            "RLR": [False, 0],
+            "SLR": [False, 0],
+            "RFLR": [True, 0],
         }
-    return lamps

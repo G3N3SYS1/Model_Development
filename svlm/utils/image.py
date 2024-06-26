@@ -9,6 +9,27 @@ log = logging.getLogger(__name__)
 
 
 def isbright(img: np.ndarray, contour: np.ndarray, label: str, mlt: dict) -> bool:
+    """Check if the mean pixel value inside the contour area of the image is brighter 
+    than a threshold.
+
+    - Uses the provided contour to create a binary mask and calculates the mean
+      pixel value within this mask.
+    - Compares the mean pixel value against a threshold specified in the `mlt`
+      dictionary based on the `label`.
+
+    :param img: Image frame in the form of a NumPy array.
+    :type img: np.ndarray
+    :param contour: Contour points defining the region of interest.
+    :type contour: np.ndarray
+    :param label: Label indicating the type of area (e.g., "LIR", "default").
+    :type label: str
+    :param mlt: Dictionary containing thresholds for different labels.
+    :type mlt: dict
+
+    :return: True if the mean pixel value inside the contour is greater than the 
+    threshold for the label, False otherwise.
+    :rtype: bool
+    """
     assert contour.size != 0, "Contour array is empty"
     assert img.size != 0, "Image array is empty"
 
@@ -26,6 +47,21 @@ def isbright(img: np.ndarray, contour: np.ndarray, label: str, mlt: dict) -> boo
 
 
 def pad(img: np.ndarray, resolution_wh: Tuple[int, int]) -> np.ndarray:
+    """Resize and center-align an image within a black frame of specified resolution.
+
+    - Resizes the input image to fit within the specified resolution while maintaining
+      aspect ratio.
+    - Places the resized image in the center of a black frame of the specified resolution.
+
+    :param img: Image frame in the form of a NumPy array.
+    :type img: np.ndarray
+    :param resolution_wh: Desired width and height of the padded frame.
+    :type resolution_wh: Tuple[int, int]
+
+    :return: Padded image with the input image centered within a black frame of 
+    specified resolution.
+    :rtype: np.ndarray
+    """
     assert img.size != 0, "Image array is empty"
     width, height = resolution_wh
 
@@ -47,6 +83,22 @@ def pad(img: np.ndarray, resolution_wh: Tuple[int, int]) -> np.ndarray:
 
 
 def crop(img: np.ndarray, contour: np.ndarray, bbox: np.ndarray) -> np.ndarray:
+    """Crop the image using the bounding box coordinates and the contour to create a mask.
+
+    - Creates a binary mask using the contour and applies it to the input image to extract
+      the region of interest.
+    - Uses the bounding box coordinates to define the exact area to crop from the image.
+
+    :param img: Image frame in the form of a NumPy array.
+    :type img: np.ndarray
+    :param contour: Contour points defining the region of interest.
+    :type contour: np.ndarray
+    :param bbox: Bounding box coordinates (x1, y1, x2, y2) defining the area to crop.
+    :type bbox: np.ndarray
+
+    :return: Cropped image frame segment defined by the bounding box and contour.
+    :rtype: np.ndarray
+    """
     assert contour.size != 0, "Contour array is empty"
     assert img.size != 0, "Image array is empty"
 
@@ -60,7 +112,26 @@ def crop(img: np.ndarray, contour: np.ndarray, bbox: np.ndarray) -> np.ndarray:
     x1, y1, x2, y2 = bbox
     return isolated[y1:y2, x1:x2]
 
-def draw_bbox(img: np.ndarray, bbox: np.ndarray, isfrontlamp, key: str = None):
+def draw_bbox(img: np.ndarray, bbox: np.ndarray, isfrontlamp: bool, key: str = None) -> np.ndarray:
+    """Draw a bounding box or a circle with the centroid on the image.
+
+    - Draws either a rectangle with the given bounding box coordinates or a circle
+      centered at the centroid of the bounding box.
+    - Uses different colors for different keys based on the front or rear lamp view.
+
+    :param img: Image frame in the form of a NumPy array.
+    :type img: np.ndarray
+    :param bbox: Bounding box coordinates (x1, y1, x2, y2) defining the area to draw.
+    :type bbox: np.ndarray
+    :param isfrontlamp: Flag indicating whether the view is from the front or rear
+      of the vehicle.
+    :type isfrontlamp: bool
+    :param key: Optional key for selecting color (optional).
+    :type key: str, optional
+
+    :return: Image frame with the bounding box or circle drawn.
+    :rtype: np.ndarray
+    """
     colors = get_lamp_colour(isfrontlamp)
     x1, y1, x2, y2 = bbox
     
@@ -75,7 +146,29 @@ def draw_bbox(img: np.ndarray, bbox: np.ndarray, isfrontlamp, key: str = None):
     
     return img
 
-def draw_texts(img: np.ndarray, key: str, value, x, y, isfrontlamp):
+def draw_texts(img: np.ndarray, key: str, value: bool, point:tuple, isfrontlamp: bool) -> np.ndarray:
+    """Draw text on the image indicating detection results or status.
+
+    - Draws text labels and corresponding results (PASS/FAIL or Detected/Undetected)
+      at the specified point on the image.
+    - Uses different colors for different keys based on the front or rear lamp view.
+
+    :param img: Image frame in the form of a NumPy array.
+    :type img: np.ndarray
+    :param key: Key or label for the text to be drawn.
+    :type key: str
+    :param value: Boolean value representing detection status or result
+      (True for PASS/Detected, False for FAIL/Undetected).
+    :type value: bool
+    :param point: Coordinates (x, y) indicating where to draw the text on the image.
+    :type point: tuple
+    :param isfrontlamp: Flag indicating whether the view is from the front or rear of the vehicle.
+    :type isfrontlamp: bool
+
+    :return: Image frame with the text drawn.
+    :rtype: np.ndarray
+    """
+    x, y = point
     colors = get_lamp_colour(isfrontlamp)
     cv2.putText(img, f"{key}: ", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, colors[key], 2)
     text_size, _ = cv2.getTextSize(f"{key}: ", cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
@@ -95,7 +188,27 @@ def draw_texts(img: np.ndarray, key: str, value, x, y, isfrontlamp):
     
     return img
 
-def draw_conf(img: np.ndarray, key: str, value: float, x, y, isfrontlamp):
+def draw_conf(img: np.ndarray, key: str, value: float, point: tuple, isfrontlamp: bool) -> np.ndarray:
+    """Draw confidence value or score as text on the image.
+
+    - Draws the confidence value or score at the specified point on the image for the given key.
+    - Uses different colors for different keys based on the front or rear lamp view.
+
+    :param img: Image frame in the form of a NumPy array.
+    :type img: np.ndarray
+    :param key: Key or label for the confidence value to be drawn.
+    :type key: str
+    :param value: Confidence value or score to be displayed.
+    :type value: float
+    :param point: Coordinates (x, y) indicating where to draw the text on the image.
+    :type point: tuple
+    :param isfrontlamp: Flag indicating whether the view is from the front or rear of the vehicle.
+    :type isfrontlamp: bool
+
+    :return: Image frame with the confidence value drawn.
+    :rtype: np.ndarray
+    """
+    x, y = point
     colors = get_lamp_colour(isfrontlamp)
     cv2.putText(img, f"{key}: ", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, colors[key], 2)
     text_size, _ = cv2.getTextSize(f"{key}: ", cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
@@ -111,7 +224,19 @@ def draw_conf(img: np.ndarray, key: str, value: float, x, y, isfrontlamp):
     return img
 
 
-def get_lamp_colour(isfrontlamp: bool = True):
+def get_lamp_colour(isfrontlamp: bool = True)-> dict:
+    """Get dictionary of colors for different lamp keys based on the front or rear view.
+
+    - Returns a dictionary mapping lamp keys to their respective BGR color values based
+      on whether the view is from the front or rear of the vehicle.
+
+    :param isfrontlamp: Flag indicating whether the view is from the front or rear of the
+      vehicle (default is True for front).
+    :type isfrontlamp: bool
+
+    :return: Dictionary mapping lamp keys to BGR color tuples.
+    :rtype: dict
+    """
     if isfrontlamp:
         return {
             "FLR": (0, 0, 255),     # Red

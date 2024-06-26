@@ -7,12 +7,13 @@ import svlm.utils.image as image
 
 
 @pytest.mark.parametrize(
-    "img, contour, label, expected_result, exception",
+    "img, contour, label, mlt, expected_result, exception",
     [
         (
             np.full((500, 500, 3), 255, dtype=np.uint8),
             np.array([]),
             "",
+            {"default": 200},
             None,
             pytest.raises(AssertionError),
         ),  # empty contour
@@ -52,6 +53,7 @@ import svlm.utils.image as image
                 ]
             ),
             "",
+            {"default": 200},
             True,
             DoesNotRaise(),
         ),  # one contour
@@ -61,9 +63,10 @@ def test_isbright(
     img: np.ndarray,
     contour: np.ndarray,
     label: str,
+    mlt: dict,
     expected_result: bool,
     exception: Exception,
 ) -> None:
     with exception:
-        result = image.isbright(img, contour, label)
+        result = image.isbright(img, contour, label, mlt)
         assert result == expected_result
