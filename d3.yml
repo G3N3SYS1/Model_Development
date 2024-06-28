@@ -1,0 +1,18 @@
+predict:
+  vehicle_model_path: "./models/vehicle-d3/weights/best.pt"
+  lamp_model_path: "./models/lamp-d3-v2-0.02-tolerance/weights/best.pt"
+  source: "/mnt/c/Users/UVSS/AppData/Local/CapCut/Videos/demo_rear.mp4"
+  output_dir: "./output-predict"
+  params:
+    vehicle_conf: 0.8
+    lamp_conf: 0.3
+    d_angle: "d3"
+    ref_pt:
+      x: 970
+      y: 450
+    mean_light_thresh:
+      SLL: 100
+      RLR: 130
+      RLL: 130
+      LIR: 220
+      default: 200

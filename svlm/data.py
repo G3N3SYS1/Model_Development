@@ -16,7 +16,6 @@ def load(
     labels_path,
     dataset_type=DEFAULT_DATASET_TYPE,
 ):
-
     existing_datasets = fo.list_datasets()
     log.debug(f"Existing datasets: {existing_datasets}")
 
@@ -67,6 +66,7 @@ def export(
         dataset_type=dataset_type,
         label_field=label_field,
         classes=dataset.default_classes,
+        tolerance=0.02,
     )
     log.info(
         f"Data has been successfully exported as f{DEFAULT_DATASET_TYPE.__name__} to {export_dir}."

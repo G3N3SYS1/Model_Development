@@ -1,8 +1,6 @@
 import logging
-
-import click
 import data
-import extract
+import click
 import yolo
 from utils.config import Config, load_config
 
@@ -35,8 +33,12 @@ def cli(ctx, config):
 @cli.command()
 @click.pass_obj
 def augment(conf: Config):
+    import data
+
     dataset = data.load(
-        conf.dataset.name, conf.dataset.data_path, conf.dataset.labels_path
+        conf.fiftyone.dataset_name,
+        conf.fiftyone.augment.data_path,
+        conf.fiftyone.augment.labels_path,
     )
     data.augment(dataset)
 
@@ -44,23 +46,29 @@ def augment(conf: Config):
 @cli.command()
 @click.pass_obj
 def export(conf: Config):
+    import data
+
     dataset = data.load(
-        conf.dataset.name, conf.dataset.data_path, conf.dataset.labels_path
+        conf.fiftyone.dataset_name,
+        conf.fiftyone.augment.data_path,
+        conf.fiftyone.augment.labels_path,
     )
     print("Exporting dataset to COCO format")
-    data.export(dataset, conf.dataset.export_dir, conf.dataset.label_field)
-    print(f"Dataset has been exported to {conf.dataset.export_dir}.")
+    data.export(
+        dataset, conf.fiftyone.export.output_dir, conf.fiftyone.export.label_field
+    )
+    print(f"Dataset has been exported to {conf.fiftyone.export.output_dir}.")
 
 
 @cli.command()
 @click.pass_obj
 def train(conf: Config):
     yolo.train(
-        conf.model.path,
-        conf.model.source,
-        conf.model.params.imgsz,
-        conf.model.params.epochs,
-        conf.model.params.batch,
+        conf.train.base_model_path,
+        conf.train.dataset,
+        conf.train.params.imgsz,
+        conf.train.params.epochs,
+        conf.train.params.batch,
     )
 
 
@@ -69,17 +77,27 @@ def train(conf: Config):
 @click.argument("labels")
 @click.argument("output")
 def split(images, labels, output):
+    import data
+
     data.split(images, labels, output)
 
 
 @cli.command()
-@click.argument("source")
-@click.option("-o", "--output", type=click.Path(exists=False))
+# @click.argument("source")
+# @click.option("-o", "--output", "output_dir", type=click.Path(exists=False))
 @click.pass_obj
-def predict(conf: Config, source, output):
-    results = yolo.predict(conf.model.path, source, conf.model.params.conf)
-    for r in results:
-        extract.segmentation_as_image(r, output)
+def predict(conf: Config):
+    yolo.predict(
+        conf.predict.vehicle_model_path,
+        conf.predict.lamp_model_path,
+        conf.predict.output_dir,
+        conf.predict.source,
+        conf.predict.params.vehicle_conf,
+        conf.predict.params.lamp_conf,
+        conf.predict.params.d_angle,
+        conf.predict.params.ref_pt,
+        conf.predict.params.mean_light_thresh,
+    )
 
 
 @cli.command()

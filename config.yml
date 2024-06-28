@@ -1,20 +1,34 @@
 # Fiftyone data augmentation and splitting
-dataset:
-  data_path: "./datasets/test-dataset/images"
-  labels_path: "./datasets/test-dataset/result.json"
-  name: "sta-toyota-prius-5dr-hatchback-auto-d2-test-2"
-  label_field: "segmentations"
-  export_dir: "./output"
+fiftyone:
+  dataset_name: "pre-aug"
+  augment:
+    data_path: "./datasets/pre-aug/images"
+    labels_path: "./datasets/pre-aug/result.json"
+  export:
+    label_field: "segmentations"
+    output_dir: "./export"
 
 # Model prediction and training
-model:
-  # Pre-trained weights (e.g ./model/weights/best.pt)
-  path: "./models/best/weights/best.pt"
-  # For training (e.g. ./dataset/dataset.yaml)
-  source: "./dataset/dataset.yaml"
+train:
+  base_model_path: "yolov8n-seg.pt"
+  dataset: "./dataset/dataset.yaml"
   params:
     imgsz: 640
     epochs: 100
     batch: 32
     conf: 0.3
 
+predict:
+  vehicle_model_path: "./models/vehicle-d2/weights/best.pt"
+  lamp_model_path: "./models/lamp-d2-v3/weights/best.pt"
+  source: "/mnt/c/Users/UVSS/AppData/Local/CapCut/Videos/demo_front.mp4"
+  output_dir: "./output-predict"
+  params:
+    vehicle_conf: 0.8
+    lamp_conf: 0.5
+    d_angle: "d2"
+    ref_pt:
+      x: 1400
+      y: 700
+    mean_light_thresh:
+      default: 200
