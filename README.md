@@ -89,6 +89,8 @@ python svlm\main.py split ./coco-dataset/images ./coco-dataset/labels.json ./yol
 COCO dataset should be used for augmentation as it preserves bounding boxes and segmentation masks after importing into Fiftyone for augmentation.
 After augmentation, dataset will be exported in the YOLO format.
 
+> Datasets and models can be found in the STA shared drive on the NAS.
+
 Dataset should be in the COCO format when used as input for Fiftyone as follows:
 
 ```
@@ -108,9 +110,6 @@ yolo/
 ├─ labels/
 │  ├─ image1.txt
 ```
-
-> [!NOTE]  
-> Datasets and models can be found in the STA shared drive on the NAS.
 
 ## Contribution
 
