@@ -109,6 +109,9 @@ yolo/
 │  ├─ image1.txt
 ```
 
+> [!NOTE]  
+> Datasets and models can be found in the STA shared drive on the NAS.
+
 ## Contribution
 
 ### Pre-commit tool
