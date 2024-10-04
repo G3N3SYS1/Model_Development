@@ -1,10 +1,11 @@
 import json
 import sys
 
-folder = sys.argv[1]
+#folder = sys.argv[1]
+folder = "coco_file"
 
 # open file in read-mode
-filename = "./" + folder + "/result.json"
+filename = "C:\\Users\\MaxwellLee\\PycharmProjects\\SVLM\\" + folder + "/result.json"
 with open(filename, "r") as file:
     # read JSON data
     data = json.load(file)

@@ -99,7 +99,7 @@ def split(images_directory_path, annotations_path, output_dir):
     ds = sv.DetectionDataset.from_coco(
         images_directory_path=images_directory_path,
         annotations_path=annotations_path,
-        force_masks=True,
+        force_masks=False,
     )
 
     train, test = ds.split(split_ratio=0.7, random_state=42, shuffle=True)

@@ -174,9 +174,9 @@ def draw_texts(img: np.ndarray, key: str, value: bool, point:tuple, isfrontlamp:
     text_size, _ = cv2.getTextSize(f"{key}: ", cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
 
     if key in ["RFLL", "RFLR"]:
-        display_res = f"{"Detected" if value else "Undetected"}"
+        display_res = f"{'Detected' if value else 'Undetected'}"
     else: 
-        display_res = f"{"PASS" if value else "FAIL"}"
+        display_res = f"{'PASS' if value else 'FAIL'}"
     cv2.putText(
         img, 
         display_res, 

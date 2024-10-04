@@ -1,9 +1,9 @@
 # Fiftyone data augmentation and splitting
 fiftyone:
-  dataset_name: "pre-aug"
+  dataset_name: "coco_file"
   augment:
-    data_path: "./datasets/pre-aug/images"
-    labels_path: "./datasets/pre-aug/result.json"
+    data_path: "C:\\Users\\MaxwellLee\\PycharmProjects\\SVLM\\coco_file\\images\\"
+    labels_path: "C:\\Users\\MaxwellLee\\PycharmProjects\\SVLM\\coco_file\\result.json"
   export:
     label_field: "segmentations"
     output_dir: "./export"
@@ -11,7 +11,7 @@ fiftyone:
 # Model prediction and training
 train:
   base_model_path: "yolov8n-seg.pt"
-  dataset: "./dataset/dataset.yaml"
+  dataset: "./yolo-dataset/dataset.yml"
   params:
     imgsz: 640
     epochs: 100
