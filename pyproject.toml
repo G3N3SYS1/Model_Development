@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "svlm"
+name = "uvsm"
 version = "0.1.0"
-description = "Segment Vehicle and Lamp Model (SVLM) allows for the detection and segmentation of make-and-model-specific lamps to determine their state (on/off)."
+description = "Segment Vehicle and Lamp Model (UVSM) allows for the detection and segmentation of make-and-model-specific lamps to determine their state (on/off)."
 authors = ["Kai <kaizhe@teleradio.com.sg>"]
 readme = "README.md"
 

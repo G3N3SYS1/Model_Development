@@ -1,34 +1,35 @@
-# Fiftyone data augmentation and splitting
+# Fiftyone images augmentation and splitting
 fiftyone:
-  dataset_name: "coco_file"
+  dataset_name: "25_images"
   augment:
-    data_path: "C:\\Users\\MaxwellLee\\PycharmProjects\\SVLM\\coco_file\\images\\"
-    labels_path: "C:\\Users\\MaxwellLee\\PycharmProjects\\SVLM\\coco_file\\result.json"
+    data_path: "C:\\Users\\MaxwellLee\\PycharmProjects\\UVSM\\25_images\\images"
+    labels_path: "C:\\Users\\MaxwellLee\\PycharmProjects\\UVSM\\25_images\\result.json"
   export:
     label_field: "segmentations"
-    output_dir: "./export"
+    output_dir: "./export_25_images_test"
 
 # Model prediction and training
 train:
   base_model_path: "yolov8n-seg.pt"
-  dataset: "./yolo-dataset/dataset.yml"
+  dataset: "C:\\Users\\MaxwellLee\\PycharmProjects\\UVSM\\yolo-dataset_export_748_images_16_dec_24"
   params:
     imgsz: 640
     epochs: 100
     batch: 32
     conf: 0.3
+    patience: 5
 
-predict:
-  vehicle_model_path: "./models/vehicle-d2/weights/best.pt"
-  lamp_model_path: "./models/lamp-d2-v3/weights/best.pt"
-  source: "/mnt/c/Users/UVSS/AppData/Local/CapCut/Videos/demo_front.mp4"
-  output_dir: "./output-predict"
-  params:
-    vehicle_conf: 0.8
-    lamp_conf: 0.5
-    d_angle: "d2"
-    ref_pt:
-      x: 1400
-      y: 700
-    mean_light_thresh:
-      default: 200
+#predict:
+#  model_path: "C:\Users\MaxwellLee\PycharmProjects\UVSM\models\car\weights\cars.pt"
+##  lamp_model_path: "./models/lamp-d2-v3/weights/maxwell.pt"
+#  source: "./yolo-dataset_cars/test/images"
+#  output_dir: "./output-predict-cars.pt"
+#  params:
+#    vehicle_conf: 0.8
+#    lamp_conf: 0.5
+#    d_angle: "d2"
+#    ref_pt:
+#      x: 1400
+#      y: 700
+#    mean_light_thresh:
+#      default: 200
