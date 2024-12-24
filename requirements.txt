@@ -7,13 +7,18 @@ appdirs==1.4.4
 argcomplete==3.3.0
 argon2-cffi @ file:///opt/conda/conda-bld/argon2-cffi_1645000214183/work
 argon2-cffi-bindings @ file:///C:/ci/argon2-cffi-bindings_1644569876605/work
+asgiref==3.8.1
 asttokens @ file:///opt/conda/conda-bld/asttokens_1646925590279/work
 async-lru @ file:///C:/b/abs_e0hjkvwwb5/croot/async-lru_1699554572212/work
 attr==0.3.1
 attrs==23.2.0
+azure-core==1.32.0
+azure-storage-blob==12.24.0
 Babel @ file:///C:/b/abs_a2shv_3tqi/croot/babel_1671782804377/work
 beautifulsoup4==4.12.3
-bleach @ file:///opt/conda/conda-bld/bleach_1641577558959/work
+black==24.10.0
+bleach==5.0.1
+boto==2.49.0
 boto3==1.34.117
 botocore==1.34.117
 Brotli==1.1.0
@@ -30,18 +35,42 @@ colorama==0.4.6
 comm @ file:///C:/b/abs_67a8058udb/croot/comm_1709322909844/work
 contourpy==1.2.1
 crashtest @ file:///home/conda/feedstock_root/build_artifacts/crashtest_1667467006729/work
+cryptography==44.0.0
 cycler==0.12.1
 dacite==1.7.0
+datamodel-code-generator==0.26.1
 debugpy @ file:///C:/b/abs_c0y1fjipt2/croot/debugpy_1690906864587/work
 decorator @ file:///opt/conda/conda-bld/decorator_1643638310831/work
 defusedxml==0.7.1
 Deprecated==1.2.14
 dill==0.3.8
 distlib==0.3.8
+distro==1.9.0
+Django==4.2.17
+django-annoying==0.10.6
+django-cors-headers==3.6.0
+django-csp==3.7
+django-debug-toolbar==3.2.1
+django-environ==0.10.0
+django-extensions==3.2.3
+django-filter==2.4.0
+django-migration-linter==5.1.0
+django-model-utils==4.1.1
+django-ranged-fileresponse==0.1.2
+django-rq==2.5.1
+django-storages==1.12.3
+django-user-agents==0.4.0
+djangorestframework==3.15.2
 dnspython==2.6.1
+drf-dynamic-fields==0.3.0
+drf-flex-fields==0.9.5
+drf-generators==0.3.0
 dulwich @ file:///D:/bld/dulwich_1701831540142/work
+email_validator==2.2.0
 exceptiongroup==1.2.1
 executing @ file:///opt/conda/conda-bld/executing_1646925071911/work
+expiringdict==1.2.2
+Faker==33.1.0
 fastjsonschema @ file:///home/conda/feedstock_root/build_artifacts/python-fastjsonschema_1718477020893/work/dist
 fiftyone==0.23.8
 fiftyone-brain==0.16.1
@@ -52,36 +81,58 @@ fonttools==4.53.0
 fsspec==2024.5.0
 ftfy==6.2.0
 future==1.0.0
+genson==1.3.0
 glob2==0.7
 gmpy2 @ file:///C:/ci/gmpy2_1645438895476/work
+google-api-core==2.24.0
+google-auth==2.37.0
+google-cloud-appengine-logging==1.5.0
+google-cloud-audit-log==0.3.0
+google-cloud-core==2.4.1
+google-cloud-logging==3.11.3
+google-cloud-storage==2.19.0
+google-crc32c==1.6.0
+google-resumable-media==2.7.2
+googleapis-common-protos==1.66.0
 graphql-core==3.2.3
 grep==0.3.2
+grpc-google-iam-v1==0.13.1
+grpcio==1.68.1
+grpcio-status==1.68.1
 h11==0.14.0
 h2==4.1.0
 hpack==4.0.0
 httpcore==1.0.5
 httpx==0.27.0
 humanize==4.9.0
+humansignal-drf-yasg==1.21.10.post1
 Hypercorn==0.17.3
 hyperframe==6.0.1
 identify==2.5.36
 idna==3.7
+ijson==3.3.0
 imageio==2.34.1
 importlib_metadata @ file:///home/conda/feedstock_root/build_artifacts/importlib-metadata_1726082825846/work
 inflate64==1.0.0
+inflect==5.6.2
+inflection==0.5.1
 installer @ file:///home/conda/feedstock_root/build_artifacts/python-installer_1679300325491/work
 intel-openmp==2021.4.0
 ipykernel @ file:///C:/b/abs_c2u94kxcy6/croot/ipykernel_1705933907920/work
 ipython @ file:///C:/b/abs_53it5seiim/croot/ipython_1726064251844/work
+isodate==0.7.2
+isort==5.13.2
 itsdangerous==2.0.1
 jaraco.classes @ file:///home/conda/feedstock_root/build_artifacts/jaraco.classes_1713939306738/work
 jedi @ file:///C:/b/abs_1b8kmj7rrm/croot/jedi_1721058359741/work
 Jinja2==3.0.3
+jiter==0.8.2
 jmespath==1.0.1
 joblib==1.4.2
+jsf==0.11.2
 json5 @ file:///tmp/build/80754af9/json5_1624432770122/work
 jsonlines==4.0.0
-jsonschema @ file:///C:/b/abs_d1c4sm8drk/croot/jsonschema_1699041668863/work
+jsonschema==4.23.0
 jsonschema-specifications @ file:///C:/b/abs_0brvm6vryw/croot/jsonschema-specifications_1699032417323/work
 jupyter-events @ file:///C:/b/abs_c2m9s5b5m5/croot/jupyter_events_1718738115254/work
 jupyter-lsp @ file:///C:/b/abs_ecle3em9d4/croot/jupyter-lsp-meta_1699978291372/work
@@ -95,13 +146,20 @@ jupyterlab_server @ file:///C:/b/abs_fdi5r_tpjc/croot/jupyterlab_server_17258653
 kaleido==0.2.1
 keyring @ file:///D:/bld/keyring_1709129797171/work
 kiwisolver==1.4.5
+label-studio==1.15.0
 label-studio-ml==1.0.9
+label-studio-sdk==1.0.8
 label-studio-tools==0.0.4
+launchdarkly-server-sdk==8.2.1
 lazy_loader==0.4
+lockfile==0.12.2
 lxml==5.3.0
+lxml_html_clean==0.4.1
+markdown-it-py==3.0.0
 MarkupSafe @ file:///C:/b/abs_ecfdqh67b_/croot/markupsafe_1704206030535/work
 matplotlib==3.9.0
 matplotlib-inline @ file:///C:/ci/matplotlib-inline_1661934094726/work
+mdurl==0.1.2
 mistune @ file:///C:/Users/BUILDE~1/AppData/Local/Temp/abs_081kimkskf/croots/recipe/mistune_1661496225923/work
 mkl==2021.4.0
 mkl-service==2.4.0
@@ -113,23 +171,29 @@ motor==3.6.0
 mpmath @ file:///C:/b/abs_7833jrbiox/croot/mpmath_1690848321154/work
 msgpack @ file:///D:/bld/msgpack-python_1725975182880/work
 multivolumefile==0.2.3
+mypy-extensions==1.0.0
 nbclient @ file:///C:/b/abs_cal0q5fyju/croot/nbclient_1698934263135/work
 nbconvert @ file:///C:/b/abs_17p29f_rx4/croot/nbconvert_1699022793097/work
 nbformat @ file:///C:/b/abs_5a2nea1iu2/croot/nbformat_1694616866197/work
 nest-asyncio @ file:///C:/b/abs_65d6lblmoi/croot/nest-asyncio_1708532721305/work
 networkx @ file:///C:/b/abs_3bxnu56g9d/croot/networkx_1717597507456/work
+nltk==3.9.1
 nodeenv==1.9.0
 notebook @ file:///C:/b/abs_feeub5ouq6/croot/notebook_1727197380211/work
 notebook_shim @ file:///C:/b/abs_a5xysln3lb/croot/notebook-shim_1699455926920/work
 numpy==1.26.4
 omegaconf==2.3.0
+openai==1.58.1
 opencv-python==4.10.0.84
 opencv-python-headless==4.9.0.80
+opentelemetry-api==1.29.0
+ordered-set==4.0.2
 overrides @ file:///C:/b/abs_cfh89c8yf4/croot/overrides_1699371165349/work
 packaging==24.0
-pandas==2.2.2
+pandas==2.2.3
 pandocfilters @ file:///opt/conda/conda-bld/pandocfilters_1643405455980/work
 parso @ file:///opt/conda/conda-bld/parso_1641458642106/work
+pathspec==0.12.1
 pexpect @ file:///home/conda/feedstock_root/build_artifacts/pexpect_1706113125309/work
 pillow==11.0.0
 pkginfo @ file:///home/conda/feedstock_root/build_artifacts/pkginfo_1717941096678/work
@@ -143,27 +207,34 @@ pre-commit==3.7.1
 priority==2.0.0
 prometheus-client @ file:///C:/Windows/TEMP/abs_ab9nx8qb08/croots/recipe/prometheus_client_1659455104602/work
 prompt-toolkit @ file:///C:/b/abs_68uwr58ed1/croot/prompt-toolkit_1704404394082/work
+proto-plus==1.25.0
+protobuf==5.29.2
 psutil==5.9.8
+psycopg2-binary==2.9.10
 ptyprocess @ file:///home/conda/feedstock_root/build_artifacts/ptyprocess_1609419310487/work/dist/ptyprocess-0.7.0-py2.py3-none-any.whl
 pure-eval @ file:///opt/conda/conda-bld/pure_eval_1646925070566/work
 py-cpuinfo==9.0.0
 py7zr==0.21.0
+pyasn1==0.6.1
+pyasn1_modules==0.4.1
 pybcj==1.0.2
+pyboxen==1.3.0
 pycocotools==2.0.7
 pycparser @ file:///home/conda/feedstock_root/build_artifacts/pycparser_1711811537435/work
 pycryptodomex==3.20.0
-pydantic==2.7.2
-pydantic_core==2.18.3
+pydantic==2.10.4
+pydantic_core==2.27.2
 pydash==8.0.3
 Pygments @ file:///C:/b/abs_fay9dpq4n_/croot/pygments_1684279990574/work
 pymongo==4.9.2
 pyparsing==3.1.2
 pyppmd==1.1.0
 pyproject_hooks @ file:///home/conda/feedstock_root/build_artifacts/pyproject_hooks_1714415182721/work
+pyRFC3339==2.0.1
 PySocks @ file:///D:/bld/pysocks_1661604991356/work
 python-dateutil==2.9.0.post0
-python-json-logger @ file:///C:/b/abs_cblnsm6puj/croot/python-json-logger_1683824130469/work
-pytz==2024.1
+python-json-logger==2.0.4
+pytz==2022.7.1
 pywin32==305.1
 pywin32-ctypes @ file:///D:/bld/pywin32-ctypes_1727282164340/work
 pywinpty @ file:///C:/b/abs_73vshmevwq/croot/pywinpty_1677609966356/work/target/wheels/pywinpty-2.0.10-cp310-none-win_amd64.whl
@@ -172,26 +243,37 @@ pyzmq @ file:///C:/b/abs_89aq69t0up/croot/pyzmq_1705605705281/work
 pyzstd==0.16.0
 RapidFuzz @ file:///D:/bld/rapidfuzz_1727102478822/work
 rarfile==4.2
+redis==3.5.3
 referencing @ file:///C:/b/abs_09f4hj6adf/croot/referencing_1699012097448/work
 regex==2024.5.15
 requests==2.32.3
+requests-mock==1.12.1
 requests-toolbelt @ file:///home/conda/feedstock_root/build_artifacts/requests-toolbelt_1682953341151/work
 retrying==1.3.4
 rfc3339-validator @ file:///C:/b/abs_ddfmseb_vm/croot/rfc3339-validator_1683077054906/work
 rfc3986-validator @ file:///C:/b/abs_6e9azihr8o/croot/rfc3986-validator_1683059049737/work
+rich==13.9.4
 rpds-py @ file:///C:/b/abs_76j4g4la23/croot/rpds-py_1698947348047/work
+rq==1.10.1
+rsa==4.9
+rstr==3.2.2
 Rtree==1.3.0
+rules==3.4
 s3transfer==0.10.1
 scikit-image==0.23.2
 scikit-learn==1.5.0
 scipy==1.13.1
 seaborn==0.13.2
+semver==3.0.2
 Send2Trash @ file:///C:/b/abs_08dh49ew26/croot/send2trash_1699371173324/work
+sentry-sdk==2.19.2
 shellingham @ file:///home/conda/feedstock_root/build_artifacts/shellingham_1698144360966/work
 six==1.16.0
+smart-open==7.1.0
 sniffio==1.3.1
 sortedcontainers==2.4.0
 soupsieve==2.5
+sqlparse==0.5.3
 sse-starlette==0.10.3
 sseclient-py==1.8.0
 stack-data @ file:///opt/conda/conda-bld/stack_data_1646927590127/work
@@ -211,6 +293,7 @@ thop==0.1.1.post2209072238
 threadpoolctl==3.5.0
 tifffile==2024.5.22
 tinycss2 @ file:///C:/b/abs_52w5vfuaax/croot/tinycss2_1668168823131/work
+toml==0.10.2
 tomli==2.0.1
 tomlkit @ file:///home/conda/feedstock_root/build_artifacts/tomlkit_1723631480657/work
 torch==2.5.1
@@ -220,12 +303,17 @@ tornado @ file:///C:/b/abs_7bua0304mj/croot/tornado_1718740122405/work
 tqdm==4.66.4
 traitlets @ file:///C:/b/abs_bfsnoxl4pq/croot/traitlets_1718227069245/work
 trove-classifiers @ file:///home/conda/feedstock_root/build_artifacts/trove-classifiers_1726229502098/work
-typing_extensions==4.12.1
+typing_extensions @ file:///C:/b/abs_0ffjxtihug/croot/typing_extensions_1734714875646/work
 tzdata==2024.1
 tzlocal==5.2
+ua-parser==1.0.0
+ua-parser-builtins==0.18.0.post1
+ujson==5.10.0
 ultralytics==8.2.10
 universal-analytics-python3==1.1.1
-urllib3==2.2.1
+uritemplate==4.1.1
+urllib3==1.26.20
+user-agents==2.2.0
 virtualenv==20.26.2
 voxel51-eta==0.12.7
 wcwidth==0.2.13
@@ -235,6 +323,7 @@ Werkzeug==2.0.2
 win-inet-pton @ file:///D:/bld/win_inet_pton_1667051142467/work
 wrapt==1.16.0
 wsproto==1.2.0
+xmljson==0.2.1
 xmltodict==0.13.0
 zipp @ file:///home/conda/feedstock_root/build_artifacts/zipp_1726248574750/work
 zstandard==0.23.0
