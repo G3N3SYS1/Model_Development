@@ -1,4 +1,4 @@
-y# Under Vehicle Segmentation Model (UVSM)
+# Under Vehicle Segmentation Model (UVSM)
 ## Intro
 UVSM  is an Under Vehicle Segmentation Model repository, where users can utilize it in order to develop their own working model.
 
