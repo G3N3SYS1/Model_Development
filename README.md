@@ -10,29 +10,21 @@ This repository involves 6 different procedures:
 5. Data Training: Trains the dataset according to the configured parameter in order to obtain a working model.
 6. Post Training Model Evaluation: Evaluates the capability of the model via tools like GradCAM, YOLO predict and YOLO classify.
 
-Before proceeding, a virtual environment should be created. Conda Environment is recommended for this repository.
-You may create a conda environment with the following:
-
-```bash
-# Create a venv named UVSM
-conda create -n uvsm python=3.10.16
-
-# Activate the UVSM venv
-conda activate uvsm
-```
-*Note: Alternatively, you may create conda environment directly from PyCharm IDE.*
-![FiftyOne Example](readme/12-create_conda_environment.png "Sample Image of FiftyOne")
-![FiftyOne Example](readme/13-activate environment.png "Sample Image of FiftyOne")
+Before proceeding, a virtual environment should be created. 
 
 ## A. Data Collection
 ### Pre-requisites
-Do ensure the following dependencies have been installed:
-- Fifty-One 
+Do ensure the all dependencies have been installed:
 
-The above packages may be easily installed using:
 ```
-pip install fiftyone
+pip install -r requirements.txt
 ```
+
+![FiftyOne Example](readme/14-Fiftyone_error.png "Sample Image of FiftyOne Error")
+
+*Note: When faced with such an error, head to `Users` --> `Your_Username` --> `.fiftyone`, delete it and reinstall fiftyone from your environment.
+
+![FiftyOne Example](readme/15-Fiftyone_error_2.png ".fiftyone dependencies location")
 
 After the libraries have been successfully installed, you may proceed to Data Collection located in:
 ```
@@ -154,80 +146,25 @@ You will see 2 different cells inside the notebook. Each cell is used for the fo
 ```
 
 ## D. Data Augmentation 
-### Pre-requisites
-- PyTorch (with GPU support)
-- cudnn and cuda-toolkit (with Nvidia GPU)
-- conda ([miniconda](https://docs.anaconda.com/miniconda/#quick-command-line-install) preferred) 
-- Visual Studio 2019 Build Tools (if on Windows and not Linux)
 
-The following packages cudnn and cuda-toolkit may be easily installed using conda:
 ```
-conda install -c conda-forge cudnn cuda-toolkit
-```
-
-Conda (Anaconda/Miniconda) will be used as the main virtual environment manager for this project. It allows for the creation of virtual environmtn
-and installation of non-python dependencies such as cudnn and cuda-toolkit.
-
-Poetry will be used to manage Python dependencies.
-
-## Development
-Conda (Anaconda or Miniconda) is highly recommended to be used in development. A conda virtual environment should be created and dependencies should
-be installed within the venv.
-
-```bash
-# Activate the UVSM venv
-conda activate uvsm
-
-pip install poetry
-
-poetry install
-
-# Install the Albumentations plugin for Fiftyone
-fiftyone plugins download https://github.com/jacobmarks/fiftyone-albumentations-plugin
-
-pip install albumentations
-
 # Run the program
 python uvsm\main.py
 ```
-*Note: If there's error installing Albumentations, you may do the following:*
+![FiftyOne Example](readme/16-pymongo_error.png "Pymongo Error")
+
+*Note: When faced with Pymongo error, you may do the following:
 ```
-pip uninstall charset-normalizer
-
-pip install charset-normalizer
-
-pip uninstall pytz
-
-pip install pytz==2022.7.1
-
-pip uninstall urllib3 
-
-pip install urllib3==1.26.20 
+# Go to C:\Users\MaxwellLee\PycharmProjects\UVSM\newvenv\Lib\site-packages\pymongo\database.py; add the following line
+from pymongo.database_shared import _check_name
 ```
-
-*Addtionally, for resolving missing modules, you may do the following:*
-```
-pip install supervision --user
-
-pip install ultralytics
-
-pip install omegaconf
-
-pip install pycocotools==2.0.7
-```
-*Note: You may also refer to the 'requirements.txt' file for list of required dependencies and versions.*
-
-Additional scripts are available in the `scripts/` directory which may be used for data cleaning.
-
-If you're using Albumentations on Windows, you may need to manually create the tmp/ directory in C drive.
-```
-*Note: You must first configure the config.yml file before starting augmentation.*
-```
-![FiftyOne Example](readme/11-augmentation_config_file.png "Sample Image of FiftyOne")
-
+![FiftyOne Example](readme/17-pymongo_error_fix.png "Pymongo Error Fix")
 ## Usage
 
 ### Augmentation
+*Note: You must first configure the config.yml file before starting augmentation.*
+
+![FiftyOne Example](readme/11-augmentation_config_file.png "Sample Image of FiftyOne")
 
 More frequent than not, a dataset may be augmented to synthetically generate new data based on existing data. This may be done by employing a number of different techniques such as cropping, and adjusting the hue, brightness, contrast or saturation of the image.
 
@@ -274,10 +211,39 @@ A dataset should be split to 3 seperate folders, train:test:val, and then struct
 To split and convert to YOLO format:
 ```Bash
 # python uvsm\main.py split IMAGES LABELS OUTPUT
-python uvsm\main.py split ./YOUR_AUGMENTED_DATASET_NAME/images ./YOUR_AUGMENTED_DATASET_NAME/labels.json ./yolo-dataset_YOUR_AUGMENTED_DATASET_NAME
+python uvsm\main.py split ./YOUR_AUGMENTED_DATASET_NAME/data ./YOUR_AUGMENTED_DATASET_NAME/labels.json ./yolo-dataset_YOUR_AUGMENTED_DATASET_NAME
+```
+
+After splitting, do the following:
+```Bash
+# Add test, train and val paths inside dataset.yml
+./yolo-dataset_YOUR_AUGMENTED_DATASET_NAME/
+├─ test/
+├─ train/
+├─ val/
+├─ dataset.yml (Open this file to edit its content)
+```
+
+
+```Bash
+nc: 5
+names: [catalytic convertor, fuel tank, silencer, spare tyre, wheel]
+
+# Copy paste the below into your dataset.yml, replace with respective dataset name
+test: C:\PATH_TO_YOUR_DIRECTORY\UVSM\yolo-dataset_YOUR_DATASET_NAME\test
+train: C:\PATH_TO_YOUR_DIRECTORY\UVSM\yolo-dataset_YOUR_DATASET_NAME\train
+val: C:\PATH_TO_YOUR_DIRECTORY\UVSM\yolo-dataset_YOUR_DATASET_NAME\val
 ```
 
 ### Train
+Before starting, check if you have installed CUDA, if not: 
+https://developer.nvidia.com/cuda-downloads?target_os=Windows&target_arch=x86_64&target_version=11&target_type=exe_network
+
+Afterwards, do the following:
+```Bash
+#Install necessary libraries for PyTorch with CUDA support:
+pip install torch==1.13.0+cu117 torchvision==0.14.0+cu117 torchaudio==0.13.0 -f https://download.pytorch.org/whl/torch_stable.html
+```
 To start YOLOv8 Training:
 ```
 yolo task=segment mode=train model=yolov8n-seg.pt data=PATH_TO_YOUR_DATASET\dataset.yml epochs=100 imgsz=640 

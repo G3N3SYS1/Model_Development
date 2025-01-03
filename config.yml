@@ -2,11 +2,11 @@
 fiftyone:
   dataset_name: "25_images"
   augment:
-    data_path: "C:\\Users\\MaxwellLee\\PycharmProjects\\UVSM\\25_images\\images"
-    labels_path: "C:\\Users\\MaxwellLee\\PycharmProjects\\UVSM\\25_images\\result.json"
+    data_path: "C:\\Users\\MaxwellLee\\PycharmProjects\\UVSM\\1_image\\images"
+    labels_path: "C:\\Users\\MaxwellLee\\PycharmProjects\\UVSM\\1_image\\result.json"
   export:
     label_field: "segmentations"
-    output_dir: "./export_25_images_test"
+    output_dir: "./export_1_image_test"
 
 # Model prediction and training
 train:
