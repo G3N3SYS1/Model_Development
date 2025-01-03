@@ -30,7 +30,17 @@ After the libraries have been successfully installed, you may proceed to Data Co
 ```
 UVSM/scripts/1_Data_Collection.ipynb
 ```
+![FiftyOne Example](readme/16-pymongo_error.png "Pymongo Error")
+
+*Note: When faced with Pymongo error, you may do the following:
+```
+# Go to PATH_TO_YOUR_ENVIRONMENT\Lib\site-packages\pymongo\database.py; add the following line
+from pymongo.database_shared import _check_name
+```
+![FiftyOne Example](readme/17-pymongo_error_fix.png "Pymongo Error Fix")
+
 You will see 6 different cells inside the notebook. Each cell is used for the following purpose:
+
 ```
 1 - Delete Session: Delete an existing session specified in line 3 (Replace with your dataset name).
 
@@ -151,14 +161,6 @@ You will see 2 different cells inside the notebook. Each cell is used for the fo
 # Run the program
 python uvsm\main.py
 ```
-![FiftyOne Example](readme/16-pymongo_error.png "Pymongo Error")
-
-*Note: When faced with Pymongo error, you may do the following:
-```
-# Go to C:\Users\MaxwellLee\PycharmProjects\UVSM\newvenv\Lib\site-packages\pymongo\database.py; add the following line
-from pymongo.database_shared import _check_name
-```
-![FiftyOne Example](readme/17-pymongo_error_fix.png "Pymongo Error Fix")
 ## Usage
 
 ### Augmentation
@@ -176,6 +178,7 @@ To view and augment the dataset:
 ```Bash
 python uvsm\main.py augment
 ```
+*Note: Always remember to save augmentations after every transformation done, else it will be overwritten by the next transformation.*
 
 ### Export
 
@@ -244,6 +247,11 @@ Afterwards, do the following:
 #Install necessary libraries for PyTorch with CUDA support:
 pip install torch==1.13.0+cu117 torchvision==0.14.0+cu117 torchaudio==0.13.0 -f https://download.pytorch.org/whl/torch_stable.html
 ```
+*Note: Whenever package installation error occurs due to corrupted dependencies (e.g. ~orch instead of torch), you may manually delete it:
+```
+# PATH_TO_YOUR_REPOSITORY_ENVIRONMENT\Lib\site-packages\; Look for the corrupted file and delete it.
+```
+
 To start YOLOv8 Training:
 ```
 yolo task=segment mode=train model=yolov8n-seg.pt data=PATH_TO_YOUR_DATASET\dataset.yml epochs=100 imgsz=640 
