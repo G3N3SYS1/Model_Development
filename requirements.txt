@@ -320,7 +320,6 @@ uri-template==1.3.0
 uritemplate==4.1.1
 urllib3==1.26.20
 user-agents==2.2.0
--e git+https://github.com/G3N3SYS1/UVSM.git@20d3046b791af332bebbc619053aaa6657b4b635#egg=uvsm
 virtualenv==20.26.2
 voxel51-eta==0.12.7
 wcwidth==0.2.13
