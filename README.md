@@ -1,6 +1,6 @@
-# Under Vehicle Segmentation Model (UVSM)
+# Development of Self Trained Model using YOLO
 ## Intro
-UVSM  is an Under Vehicle Segmentation Model repository, where users can utilize it in order to develop their own working model.
+This  is a repository, where users can utilize it in order to develop their own working model.
 
 This repository involves 6 different procedures:
 1. Data Collection: The main objective in this process is to obtain usable & ideally clean data. 
@@ -119,11 +119,11 @@ Alternatively, you could also copy the template code below for labeling setup (p
   <Image name="image" value="$image" zoom="true"/>
 
   <PolygonLabels name="label" toName="image" strokeWidth="3" pointSize="small" opacity="0.9">
-  <Label value="wheel" background="#FFA39E"/>
-  <Label value="spare tyre" background="#D4380D"/>
-  <Label value="fuel tank" background="#FFC069"/>
-  <Label value="catalytic converter" background="#AD8B00"/>
-  <Label value="silencer" background="#D3F261"/>
+  <Label value="cat" background="#FFA39E"/>
+  <Label value="dog" background="#D4380D"/>
+  <Label value="person" background="#FFC069"/>
+  <Label value="plant" background="#AD8B00"/>
+  <Label value="building" background="#D3F261"/>
   </PolygonLabels>
 
 </View>
@@ -137,7 +137,7 @@ Once you have finished annotating the images:
 - Click on the Export button on the upper right corner.
 - Choose the COCO format to preserve your annotations and proceed to export.
 ```
-![FiftyOne Example](readme/9-label_studio_annotation_interface.png "Sample Image of FiftyOne")
+
 ![FiftyOne Example](readme/10-export_data.png "Sample Image of FiftyOne")
 
 ## C. Post Annotation Cleaning
@@ -230,7 +230,7 @@ After splitting, do the following:
 
 ```Bash
 nc: 5
-names: [catalytic convertor, fuel tank, silencer, spare tyre, wheel]
+names: [cat, dog, person, car, building]
 
 # Copy paste the below into your dataset.yml, replace with respective dataset name
 test: C:\PATH_TO_YOUR_DIRECTORY\UVSM\yolo-dataset_YOUR_DATASET_NAME\test
